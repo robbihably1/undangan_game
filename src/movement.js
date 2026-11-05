@@ -47,11 +47,14 @@ export class MovementSystem {
       actualSpeed = delta > 0 ? (distanceMoved / delta) : 0;
 
       this.position.x = result.x;
-      this.position.y = 0;
       this.position.z = result.z;
     }
 
-    this.character.setPosition(this.position.x, 0, this.position.z);
+    // Hitung ketinggian lantai (napak di panggung pos / jembatan) dengan interpolasi halus
+    const targetY = this.collision.getSurfaceHeight ? this.collision.getSurfaceHeight(this.position.x, this.position.z) : 0;
+    this.position.y += (targetY - this.position.y) * Math.min(1, delta * 12);
+
+    this.character.setPosition(this.position.x, this.position.y, this.position.z);
 
     const isActuallyMoving = input.isMoving && actualSpeed > 0.05;
     const speedRatio = Math.max(0.4, actualSpeed / this.walkSpeed);

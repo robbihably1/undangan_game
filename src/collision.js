@@ -115,6 +115,47 @@ export class CollisionSystem {
     return false;
   }
 
+  // Menentukan ketinggian permukaan tanah / lantai (Ground vs Dek Pos vs Jembatan Kolam)
+  getSurfaceHeight(x, z) {
+    // 1. Pos Resepsi (-9, 7) - Ketinggian lantai panggung kayu 0.28
+    const distPos = Math.hypot(x - (-9), z - 7);
+    if (distPos <= 3.2) {
+      // Interpolasi halus saat melangkah masuk dari jalan ke panggung pos
+      const t = Math.max(0, Math.min(1, (3.2 - distPos) / 0.8));
+      return 0.28 * t;
+    }
+
+    // 2. Pos Photobooth (8, 7) - Ketinggian lantai bilik pos 0.25
+    const distBooth = Math.hypot(x - 8, z - 7);
+    if (distBooth <= 2.2) {
+      const t = Math.max(0, Math.min(1, (2.2 - distBooth) / 0.7));
+      return 0.25 * t;
+    }
+
+    // 3. Jembatan Melengkung di atas Kolam (Jalur dari (7, -9) ke (4, -13))
+    const distToBridge = this.distToSegment(x, z, 7, -9, 4, -13);
+    if (distToBridge <= 1.5) {
+      // Panjang jembatan: hitung titik t di tengah jembatan (lengkungan naik di tengah)
+      const dx = 4 - 7;
+      const dz = -13 - (-9);
+      const l2 = dx * dx + dz * dz;
+      let t = ((x - 7) * dx + (z - (-9)) * dz) / l2;
+      t = Math.max(0, Math.min(1, t));
+      // Parabola: arch height naik hingga 0.45 di tengah jembatan
+      const arch = Math.sin(t * Math.PI) * 0.35 + 0.15;
+      return arch;
+    }
+
+    // 4. Dek Panggung Galeri (8, -5)
+    const distGal = Math.hypot(x - 8, z - (-5));
+    if (distGal <= 2.6) {
+      const t = Math.max(0, Math.min(1, (2.6 - distGal) / 0.7));
+      return 0.3 * t;
+    }
+
+    return 0;
+  }
+
   resolveMovement(currentX, currentZ, deltaX, deltaZ) {
     if (deltaX === 0 && deltaZ === 0) {
       return { x: currentX, z: currentZ, moved: false };

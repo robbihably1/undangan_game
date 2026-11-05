@@ -35,18 +35,24 @@ html, body {
   overflow: hidden;
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--text-main);
-  background-color: #2b1d0e;
+  background: radial-gradient(circle at center, #2e1d0f, #150a04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 3D Canvas Container */
+/* 3D Canvas Container - Web Mobile App Container (Maksimal Lebar Layar Ponsel 480px di Desktop) */
 #game-container {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100vw;
+  max-width: 480px;
   height: 100vh;
   z-index: 1;
   overflow: hidden;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(139, 90, 43, 0.4);
 }
 
 #game-container canvas {
@@ -61,8 +67,10 @@ html, body {
 #game-hud {
   position: absolute;
   top: 14px;
-  left: 14px;
-  right: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 480px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -339,8 +347,10 @@ html, body {
 #mobile-controls {
   position: absolute;
   bottom: 95px;
-  left: 18px;
-  right: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 24px);
+  max-width: 480px;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
