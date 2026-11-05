@@ -171,7 +171,7 @@ export const WEDDING_CONFIG = {
       type: "rsvp",
       icon: "💌",
       label: "+ UCAPAN & RSVP",
-      position: { x: 0, z: -2 },
+      position: { x: 0, z: 6 },
       radius: 2.8,
       title: "Buku Tamu & Konfirmasi Kehadiran",
       subtitle: "Kirim Doa Restu & Konfirmasi RSVP"
@@ -215,8 +215,8 @@ export const WEDDING_CONFIG = {
       type: "venue",
       icon: "📍",
       label: "+ PANDUAN PETA",
-      position: { x: 0, z: 6 },
-      radius: 2.6,
+      position: { x: 0, z: -2 },
+      radius: 2.8,
       title: "Peta & Panduan Lokasi",
       subtitle: "Navigasi Google Maps & Alamat Acara"
     }

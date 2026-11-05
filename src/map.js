@@ -110,7 +110,8 @@ export class WeddingMap {
     this.buildCouplePaintingsSection(-11.5, -10); // Galeri Pameran Lukisan Foto Pasangan di samping checkpoint (-8, -10)
     this.buildGalleryDeck(11.8, -5);              // Panggung Galeri Foto Terbuka di samping lingkaran (8, -5)
     this.buildPondAndBridge(5, -12);             // Kolam Teratai & Jembatan Lengkung
-    this.buildRsvpAltar(0, -2);                  // Meja Buku Tamu & Pagar Ayu di tengah jalan checkpoint (0, -2)
+    this.buildRsvpAltar(0, 6);                   // Meja Buku Tamu & Pagar Ayu di (0, 6) di tengah jalan
+    this.buildMapKiosk(0, -2);                   // Pos Penunjuk Peta & Panduan Lokasi di (0, -2) di tengah jalan
   }
 
   // A. GERBANG SELAMAT DATANG (WELCOME GATE at 0, 18)
@@ -803,6 +804,184 @@ export class WeddingMap {
     this.animatedDecorations.push(pagarAyuR);
   }
 
+  // H. POS PENUNJUK PETA & PANDUAN LOKASI (OUTDOOR MAP & NAVIGATION KIOSK)
+  // Menampilkan papan peta taman bergaya vintage & penunjuk arah 3D pin peta di (0, -2)
+  buildMapKiosk(x, z) {
+    const kioskGroup = new THREE.Group();
+    kioskGroup.position.set(x, 0, z);
+    this.scene.add(kioskGroup);
+
+    // 1. Tiang Penunjuk Arah Utama (Main Directional Signpost)
+    const poleGeo = new THREE.CylinderGeometry(0.1, 0.12, 3.4, 8);
+    const pole = new THREE.Mesh(poleGeo, this.materials.woodDark);
+    pole.position.set(0, 1.7, 0);
+    kioskGroup.add(pole);
+
+    // Finial Puncak Tiang
+    const finial = new THREE.Mesh(
+      new THREE.SphereGeometry(0.16, 8, 8),
+      this.materials.goldAcsent
+    );
+    finial.position.set(0, 3.45, 0);
+    kioskGroup.add(finial);
+
+    // 2. PENUNJUK PETA 3D MERAH BESAR (3D Red Map Pin "📍")
+    const pinGroup = new THREE.Group();
+    pinGroup.position.set(0, 3.9, 0);
+    kioskGroup.add(pinGroup);
+
+    const pinMat = new THREE.MeshLambertMaterial({ color: 0xef4444 });
+    const pinCone = new THREE.Mesh(
+      new THREE.ConeGeometry(0.24, 0.55, 16),
+      pinMat
+    );
+    pinCone.rotation.x = Math.PI; // Ujung runcing mengarah ke bawah ke tiang
+    pinCone.position.set(0, 0, 0);
+    pinGroup.add(pinCone);
+
+    const pinHead = new THREE.Mesh(
+      new THREE.SphereGeometry(0.36, 16, 16),
+      pinMat
+    );
+    pinHead.position.set(0, 0.38, 0);
+    pinGroup.add(pinHead);
+
+    const pinDot = new THREE.Mesh(
+      new THREE.SphereGeometry(0.14, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0xffffff })
+    );
+    pinDot.position.set(0, 0.38, 0.28);
+    pinGroup.add(pinDot);
+
+    // Animasi rotasi / getar lembut penunjuk pin peta
+    this.animatedDecorations.push({
+      updateAnimation: (delta) => {
+        pinGroup.rotation.y += delta * 1.5;
+        pinGroup.position.y = 3.9 + Math.sin(Date.now() * 0.003) * 0.12;
+      }
+    });
+
+    // 3. Papan Panah Penunjuk Arah (Directional Arrow Planks)
+    const createSignPlank = (text, y, rotY) => {
+      const plankGroup = new THREE.Group();
+      plankGroup.position.set(0, y, 0);
+      plankGroup.rotation.y = rotY;
+
+      const plankGeo = new THREE.BoxGeometry(1.6, 0.28, 0.07);
+      const plankMesh = new THREE.Mesh(plankGeo, this.materials.woodWarm);
+      plankMesh.position.set(0.65, 0, 0);
+      plankGroup.add(plankMesh);
+
+      // Canvas Tulisan Arah Panah
+      const signCanvas = document.createElement('canvas');
+      signCanvas.width = 256;
+      signCanvas.height = 64;
+      const sctx = signCanvas.getContext('2d');
+      sctx.fillStyle = '#ffffff';
+      sctx.fillRect(0, 0, 256, 64);
+      sctx.strokeStyle = '#000000';
+      sctx.lineWidth = 4;
+      sctx.strokeRect(2, 2, 252, 60);
+      sctx.font = 'bold 22px sans-serif';
+      sctx.fillStyle = '#000000';
+      sctx.textAlign = 'center';
+      sctx.textBaseline = 'middle';
+      sctx.fillText(text, 128, 32);
+
+      const signTex = new THREE.CanvasTexture(signCanvas);
+      const signLabel = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.5, 0.24),
+        new THREE.MeshBasicMaterial({ map: signTex })
+      );
+      signLabel.position.set(0.65, 0, 0.04);
+      plankGroup.add(signLabel);
+
+      return plankGroup;
+    };
+
+    kioskGroup.add(createSignPlank('⬅ RESEPSI', 2.9, -Math.PI / 2));
+    kioskGroup.add(createSignPlank('PHOTOBOOTH ➡', 2.5, Math.PI / 2));
+    kioskGroup.add(createSignPlank('⬆ LUKISAN', 2.1, 0));
+
+    // 4. Meja Kiosk / Stand Peta Taman Terbuka
+    const tableGeo = new THREE.BoxGeometry(1.8, 0.75, 0.85);
+    const table = new THREE.Mesh(tableGeo, this.materials.woodDark);
+    table.position.set(0, 0.375, 0.55);
+    kioskGroup.add(table);
+
+    // Permukaan Peta Miring (Angled Map Blueprint)
+    const mapBoardGeo = new THREE.BoxGeometry(1.6, 0.06, 0.85);
+    const mapBoard = new THREE.Mesh(mapBoardGeo, this.materials.woodWarm);
+    mapBoard.position.set(0, 0.82, 0.55);
+    mapBoard.rotation.x = Math.PI / 8;
+    kioskGroup.add(mapBoard);
+
+    // Tekstur Peta Taman yang Digambar Manual Beresolusi Tinggi
+    const mapCanvas = document.createElement('canvas');
+    mapCanvas.width = 512;
+    mapCanvas.height = 320;
+    const mctx = mapCanvas.getContext('2d');
+    mctx.fillStyle = '#f8fafc';
+    mctx.fillRect(0, 0, 512, 320);
+
+    // Bingkai Peta
+    mctx.strokeStyle = '#334155';
+    mctx.lineWidth = 8;
+    mctx.strokeRect(6, 6, 500, 308);
+
+    // Judul Peta
+    mctx.font = 'bold 24px serif';
+    mctx.fillStyle = '#0f172a';
+    mctx.textAlign = 'center';
+    mctx.fillText('PETA PANDUAN LOKASI ACARA', 256, 40);
+
+    // Jalur Jalan Setapak Ilustrasi Peta
+    mctx.strokeStyle = '#deb887';
+    mctx.lineWidth = 14;
+    mctx.beginPath();
+    mctx.moveTo(256, 300);
+    mctx.lineTo(256, 120);
+    mctx.lineTo(120, 120);
+    mctx.moveTo(256, 120);
+    mctx.lineTo(392, 120);
+    mctx.stroke();
+
+    // Titik-titik Ikon Lokasi Peta
+    const drawPin = (px, py, label, icon) => {
+      mctx.fillStyle = '#ef4444';
+      mctx.beginPath();
+      mctx.arc(px, py, 14, 0, Math.PI * 2);
+      mctx.fill();
+      mctx.fillStyle = '#ffffff';
+      mctx.font = '14px sans-serif';
+      mctx.fillText(icon, px, py + 5);
+      mctx.fillStyle = '#000000';
+      mctx.font = 'bold 13px sans-serif';
+      mctx.fillText(label, px, py + 26);
+    };
+
+    drawPin(256, 280, 'Gerbang', '🚪');
+    drawPin(120, 120, 'Akad/Resepsi', '🥂');
+    drawPin(392, 120, 'Photobooth', '📸');
+    drawPin(256, 120, 'Peta & Info', '📍');
+    drawPin(160, 60, 'Lukisan', '🎨');
+
+    const mapTexture = new THREE.CanvasTexture(mapCanvas);
+    const mapPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.5, 0.75),
+      new THREE.MeshBasicMaterial({ map: mapTexture })
+    );
+    mapPlane.position.set(0, 0.04, 0);
+    mapPlane.rotation.x = -Math.PI / 2;
+    mapBoard.add(mapPlane);
+
+    // Lentera Gantung & Vas Bunga di Samping Kiosk
+    this.addLantern(kioskGroup, -0.9, 1.6, 0.55);
+    this.addLantern(kioskGroup, 0.9, 1.6, 0.55);
+    this.addBarrelFlower(kioskGroup, -1.2, 0, 0.55);
+    this.addBarrelFlower(kioskGroup, 1.2, 0, 0.55);
+  }
+
   // 3. Pagar Kayu Pedesaan di Sepanjang Jalur (Seperti di Referensi Gambar)
   buildFencesAndBorders() {
     const fenceGroup = new THREE.Group();
@@ -864,6 +1043,7 @@ export class WeddingMap {
   }
 
   // 4. Papan Penanda RPG Mengambang di Atas Area (+ PASANGAN, + GALERI, dll)
+  // Teks penanda section berwarna HITAM tebal berlatar bersih dengan bingkai agar sangat mudah terbaca
   buildFloatingPlaques() {
     const plaqueGroup = new THREE.Group();
     this.scene.add(plaqueGroup);
@@ -872,42 +1052,56 @@ export class WeddingMap {
       if (!loc.label) return;
 
       const plaque = new THREE.Group();
-      plaque.position.set(loc.position.x, 3.2, loc.position.z);
+      plaque.position.set(loc.position.x, 3.4, loc.position.z);
 
-      // Papan Kayu Krem RPG
-      const boardGeo = new THREE.BoxGeometry(2.0, 0.5, 0.08);
-      const board = new THREE.Mesh(boardGeo, this.materials.plaqueBg);
+      // Papan Putih Bersih RPG dengan Bingkai Emas & Kayu
+      const boardGeo = new THREE.BoxGeometry(2.4, 0.62, 0.08);
+      const board = new THREE.Mesh(boardGeo, new THREE.MeshLambertMaterial({ color: 0xffffff }));
       plaque.add(board);
 
-      // Bingkai Emas / Kayu Gelap
-      const frameGeo = new THREE.BoxGeometry(2.08, 0.56, 0.06);
+      // Bingkai Luar Kayu Gelap
+      const frameGeo = new THREE.BoxGeometry(2.48, 0.7, 0.06);
       const frame = new THREE.Mesh(frameGeo, this.materials.woodDark);
       frame.position.z = -0.01;
       plaque.add(frame);
 
-      // Canvas Tekstur Tulisan Label (misal "+ PASANGAN", "+ PHOTOBOOTH")
+      // Canvas Tekstur Tulisan Label Beresolusi Tinggi (Warna HITAM Pekat)
       const textCanvas = document.createElement('canvas');
-      textCanvas.width = 256;
-      textCanvas.height = 64;
+      textCanvas.width = 512;
+      textCanvas.height = 128;
       const ctx = textCanvas.getContext('2d');
-      ctx.fillStyle = '#fef6e4';
-      ctx.fillRect(0, 0, 256, 64);
-      ctx.font = 'bold 26px sans-serif';
-      ctx.fillStyle = '#881337';
+
+      // Latar Putih Bersih
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 512, 128);
+
+      // Border List Ganda Hitam & Emas
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(4, 4, 504, 120);
+
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(10, 10, 492, 108);
+
+      // Teks HITAM Tebal Pekat Agar Sangat Jelas Terbaca dari Sudut Kamera Jauh
+      ctx.font = '900 46px "Plus Jakarta Sans", sans-serif';
+      ctx.fillStyle = '#000000';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(loc.label, 128, 32);
+      ctx.fillText(loc.label, 256, 64);
 
       const textTexture = new THREE.CanvasTexture(textCanvas);
+      textTexture.colorSpace = THREE.SRGBColorSpace;
       const labelMesh = new THREE.Mesh(
-        new THREE.PlaneGeometry(1.9, 0.45),
+        new THREE.PlaneGeometry(2.3, 0.54),
         new THREE.MeshBasicMaterial({ map: textTexture })
       );
       labelMesh.position.z = 0.045;
       plaque.add(labelMesh);
 
-      // Billboard agar menghadap sudut kamera
-      plaque.rotation.x = -Math.PI / 6;
+      // Tilt menghadap sudut pandang kamera top-down
+      plaque.rotation.x = -Math.PI / 3.8;
 
       plaqueGroup.add(plaque);
       this.floatingLabels.push(plaque);

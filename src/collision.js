@@ -23,9 +23,9 @@ export class CollisionSystem {
     this.addSegment(0, 22, 0, 14, 1.35);
     this.addCircle(0, 18, 1.35); // Gerbang
 
-    // 2. Persimpangan Bawah (Depan Tenda Resepsi & Photobooth)
+    // 2. Persimpangan Tamu Kehadiran (Buku Tamu & RSVP dijaga Pagar Ayu di x = 0, z = 6)
     this.addSegment(0, 14, 0, 6, 1.35);
-    this.addCircle(0, 6, 1.35);
+    this.addCircle(0, 6, 1.35); // Check point Tamu Kehadiran & RSVP
 
     // 3. Area Resepsi & Akad (Check point di lingkaran x = -9, z = 7)
     this.addSegment(0, 6, -6, 6.5, 1.3);
@@ -37,9 +37,9 @@ export class CollisionSystem {
     this.addSegment(5, 6.5, 8, 7, 1.3);
     this.addCircle(8, 7, 1.35); // Check point bersih kompak
 
-    // 5. Jalur Utama Tengah ke Atas (Menuju Lingkaran Pasangan & Galeri)
+    // 5. Jalur Utama Tengah ke Atas (Menuju Pos Peta & Panduan Lokasi di x = 0, z = -2)
     this.addSegment(0, 6, 0, -2, 1.35);
-    this.addCircle(0, -2, 1.4); // Check point RSVP di tengah dijaga Pagar Ayu
+    this.addCircle(0, -2, 1.4); // Check point Pos Peta & Penunjuk Arah 3D
 
     // 6. Lingkaran Galeri Lukisan Pasangan (Kiri Atas / Barat Laut: x = -8, z = -10)
     // Jalur melingkar (Circular ring path)
