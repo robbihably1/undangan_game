@@ -37,9 +37,8 @@ export class CollisionSystem {
     this.addSegment(5, 6.5, 8, 7, 1.3);
     this.addCircle(8, 7, 1.35); // Check point bersih kompak
 
-    // 5. Jalur Utama Tengah ke Atas (Menuju Pos Peta & Panduan Lokasi di x = 0, z = -2)
-    this.addSegment(0, 6, 0, -2, 1.35);
-    this.addCircle(0, -2, 1.4); // Check point Pos Peta & Penunjuk Arah 3D
+    // 5. Check Point Pos Peta & Panduan Lokasi di x = 0, z = -2 (Tanpa jalan lurus langsung dari Pagar Ayu)
+    this.addCircle(0, -2, 1.4); // Check point Pos Peta & Penunjuk Arah 3D (dijangkau via sayap kiri atau kanan)
 
     // 6. Lingkaran Galeri Lukisan Pasangan (Kiri Atas / Barat Laut: x = -8, z = -10)
     // Jalur melingkar (Circular ring path)

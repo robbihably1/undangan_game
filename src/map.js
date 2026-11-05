@@ -902,84 +902,21 @@ export class WeddingMap {
     kioskGroup.add(createSignPlank('⬅ RESEPSI', 2.9, -Math.PI / 2));
     kioskGroup.add(createSignPlank('PHOTOBOOTH ➡', 2.5, Math.PI / 2));
     kioskGroup.add(createSignPlank('⬆ LUKISAN', 2.1, 0));
+    kioskGroup.add(createSignPlank('⬇ BUKU TAMU & RSVP', 1.7, Math.PI));
 
-    // 4. Meja Kiosk / Stand Peta Taman Terbuka
-    const tableGeo = new THREE.BoxGeometry(1.8, 0.75, 0.85);
-    const table = new THREE.Mesh(tableGeo, this.materials.woodDark);
-    table.position.set(0, 0.375, 0.55);
-    kioskGroup.add(table);
+    // 4. Dekorasi Kaki Tiang & Lentera Antik (Tanpa meja, murni tiang tugu penunjuk arah & pin peta 3D)
+    const baseGeo = new THREE.CylinderGeometry(0.5, 0.6, 0.25, 12);
+    const base = new THREE.Mesh(baseGeo, this.materials.pathBorder);
+    base.position.y = 0.125;
+    kioskGroup.add(base);
 
-    // Permukaan Peta Miring (Angled Map Blueprint)
-    const mapBoardGeo = new THREE.BoxGeometry(1.6, 0.06, 0.85);
-    const mapBoard = new THREE.Mesh(mapBoardGeo, this.materials.woodWarm);
-    mapBoard.position.set(0, 0.82, 0.55);
-    mapBoard.rotation.x = Math.PI / 8;
-    kioskGroup.add(mapBoard);
+    // Lentera Gantung Antik di Sisi Kiri & Kanan Tiang
+    this.addLantern(kioskGroup, -0.65, 2.3, 0);
+    this.addLantern(kioskGroup, 0.65, 2.3, 0);
 
-    // Tekstur Peta Taman yang Digambar Manual Beresolusi Tinggi
-    const mapCanvas = document.createElement('canvas');
-    mapCanvas.width = 512;
-    mapCanvas.height = 320;
-    const mctx = mapCanvas.getContext('2d');
-    mctx.fillStyle = '#f8fafc';
-    mctx.fillRect(0, 0, 512, 320);
-
-    // Bingkai Peta
-    mctx.strokeStyle = '#334155';
-    mctx.lineWidth = 8;
-    mctx.strokeRect(6, 6, 500, 308);
-
-    // Judul Peta
-    mctx.font = 'bold 24px serif';
-    mctx.fillStyle = '#0f172a';
-    mctx.textAlign = 'center';
-    mctx.fillText('PETA PANDUAN LOKASI ACARA', 256, 40);
-
-    // Jalur Jalan Setapak Ilustrasi Peta
-    mctx.strokeStyle = '#deb887';
-    mctx.lineWidth = 14;
-    mctx.beginPath();
-    mctx.moveTo(256, 300);
-    mctx.lineTo(256, 120);
-    mctx.lineTo(120, 120);
-    mctx.moveTo(256, 120);
-    mctx.lineTo(392, 120);
-    mctx.stroke();
-
-    // Titik-titik Ikon Lokasi Peta
-    const drawPin = (px, py, label, icon) => {
-      mctx.fillStyle = '#ef4444';
-      mctx.beginPath();
-      mctx.arc(px, py, 14, 0, Math.PI * 2);
-      mctx.fill();
-      mctx.fillStyle = '#ffffff';
-      mctx.font = '14px sans-serif';
-      mctx.fillText(icon, px, py + 5);
-      mctx.fillStyle = '#000000';
-      mctx.font = 'bold 13px sans-serif';
-      mctx.fillText(label, px, py + 26);
-    };
-
-    drawPin(256, 280, 'Gerbang', '🚪');
-    drawPin(120, 120, 'Akad/Resepsi', '🥂');
-    drawPin(392, 120, 'Photobooth', '📸');
-    drawPin(256, 120, 'Peta & Info', '📍');
-    drawPin(160, 60, 'Lukisan', '🎨');
-
-    const mapTexture = new THREE.CanvasTexture(mapCanvas);
-    const mapPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.5, 0.75),
-      new THREE.MeshBasicMaterial({ map: mapTexture })
-    );
-    mapPlane.position.set(0, 0.04, 0);
-    mapPlane.rotation.x = -Math.PI / 2;
-    mapBoard.add(mapPlane);
-
-    // Lentera Gantung & Vas Bunga di Samping Kiosk
-    this.addLantern(kioskGroup, -0.9, 1.6, 0.55);
-    this.addLantern(kioskGroup, 0.9, 1.6, 0.55);
-    this.addBarrelFlower(kioskGroup, -1.2, 0, 0.55);
-    this.addBarrelFlower(kioskGroup, 1.2, 0, 0.55);
+    // Barel Bunga Cantik di Kaki Tiang Penunjuk
+    this.addBarrelFlower(kioskGroup, -0.85, 0, 0);
+    this.addBarrelFlower(kioskGroup, 0.85, 0, 0);
   }
 
   // 3. Pagar Kayu Pedesaan di Sepanjang Jalur (Seperti di Referensi Gambar)
@@ -1114,12 +1051,12 @@ export class WeddingMap {
       { x: -4.8, z: 15 }, { x: 4.8, z: 15 },
       { x: -5.0, z: 10 }, { x: 5.0, z: 10 },
       { x: -5.2, z: 3 }, { x: 5.2, z: 3 },
-      { x: -4.5, z: -4 }, { x: 4.5, z: -4 },
+      { x: -4.5, z: -4 },
       { x: -14, z: 12 }, { x: 13, z: 12 },
       { x: -15, z: 2 }, { x: 14, z: 2 },
       { x: -14, z: -15 }, { x: 13, z: -15 },
       { x: -2, z: -16 }, { x: 10, z: -16 },
-      { x: -10, z: -2 }, { x: 10, z: -2 }
+      { x: -10, z: -2 }
     ];
 
     treePositions.forEach(pos => {
