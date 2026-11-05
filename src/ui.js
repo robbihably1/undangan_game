@@ -325,8 +325,8 @@ export class UISystem {
       case 'couple':
         html = `
           <div class="modal-header">
-            <span class="modal-badge">KEDUA MEMPELAI</span>
-            <h2>Profil Mempelai</h2>
+            <span class="modal-badge">GALERI LUKISAN MEMPELAI</span>
+            <h2>Potret & Kisah Kedua Mempelai</h2>
           </div>
           <div class="modal-body">
             <div class="couple-cards">

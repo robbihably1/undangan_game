@@ -12,7 +12,7 @@ export class GameScene {
     this.scene.background = new THREE.Color(0xdceee2); // Hijau alam pastel cerah
 
     // Gunakan Fog linier yang jauh agar seluruh elemen taman tampak tajam dan jernih
-    this.scene.fog = new THREE.Fog(0xdceee2, 45, 110);
+    this.scene.fog = new THREE.Fog(0xdceee2, 60, 160);
 
     this.initCamera();
     this.initRenderer();
@@ -24,15 +24,16 @@ export class GameScene {
     const height = this.container.clientHeight || window.innerHeight;
     const aspect = width / height;
 
-    this.camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 150);
+    // FOV lebih luas (52) dan sudut pandang lebih jauh agar seluruh objek taman terlihat megah
+    this.camera = new THREE.PerspectiveCamera(52, aspect, 0.1, 220);
 
-    // Offset kamera top-down angled (Karakter & seluruh taman tampak jelas)
+    // Offset kamera top-down angled jauh (Taman, pelaminan, galeri lukisan, kolam tampak luas)
     if (width < height) {
       // Tampilan portrait smartphone
-      this.cameraOffset = new THREE.Vector3(0, 16.0, 11.5);
+      this.cameraOffset = new THREE.Vector3(0, 26.5, 19.5);
     } else {
       // Tampilan landscape desktop
-      this.cameraOffset = new THREE.Vector3(0, 13.5, 10.0);
+      this.cameraOffset = new THREE.Vector3(0, 22.0, 16.5);
     }
 
     // Kamera mulai fokus di posisi awal karakter (x: 0, z: 9)
@@ -74,9 +75,9 @@ export class GameScene {
       this.camera.aspect = width / height;
 
       if (width < height) {
-        this.cameraOffset.set(0, 16.0, 11.5);
+        this.cameraOffset.set(0, 26.5, 19.5);
       } else {
-        this.cameraOffset.set(0, 13.5, 10.0);
+        this.cameraOffset.set(0, 22.0, 16.5);
       }
 
       this.camera.updateProjectionMatrix();

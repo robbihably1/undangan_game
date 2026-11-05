@@ -178,14 +178,14 @@ export const WEDDING_CONFIG = {
     },
     {
       id: "couple",
-      name: "Taman Bunga Pasangan",
+      name: "Galeri Lukisan Pasangan",
       type: "couple",
-      icon: "💍",
+      icon: "🎨",
       label: "+ PASANGAN",
       position: { x: -8, z: -10 },
-      radius: 3.2,
-      title: "Profil Kedua Mempelai",
-      subtitle: "Kisah Arya Wicaksono & Nadia Larasati"
+      radius: 2.8,
+      title: "Galeri Lukisan Kedua Mempelai",
+      subtitle: "Kisah Cinta & Potret Arya & Nadia"
     },
     {
       id: "gallery",

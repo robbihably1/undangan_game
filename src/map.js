@@ -70,13 +70,7 @@ export class WeddingMap {
         const circleMesh = new THREE.Mesh(circleGeo, this.materials.pathSand);
         circleMesh.position.set(elem.x, 0.02, elem.z);
         pathGroup.add(circleMesh);
-
-        // Pinggiran batu bata / tanah halus
-        const borderGeo = new THREE.RingGeometry(elem.radius - 0.15, elem.radius + 0.08, 32);
-        borderGeo.rotateX(-Math.PI / 2);
-        const borderMesh = new THREE.Mesh(borderGeo, this.materials.pathBorder);
-        borderMesh.position.set(elem.x, 0.025, elem.z);
-        pathGroup.add(borderMesh);
+        // Tanpa garis lingkaran border agar menyatu alami dengan jalan
 
       } else if (elem.type === 'segment') {
         const dx = elem.x2 - elem.x1;
@@ -111,12 +105,12 @@ export class WeddingMap {
   // 2. Membangun Area Pesta Taman Terbuka (Outdoor Garden Party - Berada di Luar Jalan)
   buildReferenceLocations() {
     this.buildWelcomeGate(0, 18);
-    this.buildReceptionTent(-13.2, 7);    // Panggung Pelaminan Pesta Taman Terbuka di samping lingkaran (-9, 7)
-    this.buildWoodenPhotoBooth(11.8, 7);   // Spot Foto Taman Terbuka di samping lingkaran (8, 7)
-    this.buildCoupleFlowerRing(-11.5, -10); // Cincin Bunga Pasangan di samping lingkaran (-8, -10)
-    this.buildGalleryDeck(11.8, -5);      // Panggung Galeri Foto Terbuka di samping lingkaran (8, -5)
-    this.buildPondAndBridge(5, -12);     // Kolam Teratai & Jembatan Lengkung (Satu-satunya yang dilintasi jembatan)
-    this.buildRsvpAltar(3.2, -2);        // Meja Buku Tamu & Pagar Ayu di samping lingkaran jalan (0, -2)
+    this.buildReceptionTent(-13.2, 7);            // Panggung Pelaminan Pesta Taman Terbuka di samping lingkaran (-9, 7)
+    this.buildWoodenPhotoBooth(11.8, 7);           // Spot Foto Taman Terbuka di samping lingkaran (8, 7)
+    this.buildCouplePaintingsSection(-11.5, -10); // Galeri Pameran Lukisan Foto Pasangan di samping checkpoint (-8, -10)
+    this.buildGalleryDeck(11.8, -5);              // Panggung Galeri Foto Terbuka di samping lingkaran (8, -5)
+    this.buildPondAndBridge(5, -12);             // Kolam Teratai & Jembatan Lengkung
+    this.buildRsvpAltar(0, -2);                  // Meja Buku Tamu & Pagar Ayu di tengah jalan checkpoint (0, -2)
   }
 
   // A. GERBANG SELAMAT DATANG (WELCOME GATE at 0, 18)
@@ -337,63 +331,260 @@ export class WeddingMap {
     this.addBarrelFlower(pbGroup, 1.4, 0.22, 1.4);
   }
 
-  // D. TAMAN CINCIN BUNGA PASANGAN (OUTDOOR FLOWER RING - Berada di Luar Jalan)
-  buildCoupleFlowerRing(x, z) {
-    const ringGroup = new THREE.Group();
-    ringGroup.position.set(x, 0, z);
-    this.scene.add(ringGroup);
+  // Helper: Membuat Tekstur Kanvas Lukisan Pasangan Beresolusi Tinggi
+  createPaintingTexture(type, title, subtitle) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 640;
+    const ctx = canvas.getContext('2d');
 
-    // Cincin Rumput & Bunga Ganda di Rumput Taman
-    const ringRadius = 2.6;
-    const ringGeo = new THREE.TorusGeometry(ringRadius, 0.35, 8, 32);
-    ringGeo.rotateX(Math.PI / 2);
-    const ringMesh = new THREE.Mesh(ringGeo, this.materials.foliageGreen);
-    ringMesh.position.y = 0.3;
-    ringGroup.add(ringMesh);
+    // Gradasi Latar Mewah Sesuai Karakter
+    let grad = ctx.createLinearGradient(0, 0, 512, 640);
+    if (type === 'groom') {
+      grad.addColorStop(0, '#1e293b');
+      grad.addColorStop(0.6, '#0f172a');
+      grad.addColorStop(1, '#020617');
+    } else if (type === 'bride') {
+      grad.addColorStop(0, '#fff1f2');
+      grad.addColorStop(0.5, '#fce7f3');
+      grad.addColorStop(1, '#f43f5e');
+    } else {
+      // Pasangan Berdua (Royal Burgundy & Amethyst)
+      grad.addColorStop(0, '#4c0519');
+      grad.addColorStop(0.5, '#701a75');
+      grad.addColorStop(1, '#1e1b4b');
+    }
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 512, 640);
 
-    // Pagar Kayu Melingkari Cincin Bunga (Mini Circular Picket Fence)
-    const fenceCount = 20;
-    for (let i = 0; i < fenceCount; i++) {
-      const angle = (i / fenceCount) * Math.PI * 2;
-      const px = Math.cos(angle) * (ringRadius + 0.55);
-      const pz = Math.sin(angle) * (ringRadius + 0.55);
-      const post = new THREE.Mesh(
-        new THREE.BoxGeometry(0.1, 0.5, 0.08),
-        this.materials.woodFence
-      );
-      post.position.set(px, 0.25, pz);
-      post.rotation.y = -angle;
-      ringGroup.add(post);
+    // Bingkai Ornamen Emas (Gold Foil Framing)
+    ctx.strokeStyle = '#d4af37';
+    ctx.lineWidth = 14;
+    ctx.strokeRect(18, 18, 512 - 36, 640 - 36);
+
+    ctx.strokeStyle = 'rgba(255, 223, 0, 0.5)';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(30, 30, 512 - 60, 640 - 60);
+
+    // Corner Ornaments
+    const drawCorner = (cx, cy) => {
+      ctx.fillStyle = '#d4af37';
+      ctx.beginPath();
+      ctx.arc(cx, cy, 9, 0, Math.PI * 2);
+      ctx.fill();
+    };
+    drawCorner(30, 30);
+    drawCorner(512 - 30, 30);
+    drawCorner(30, 640 - 30);
+    drawCorner(512 - 30, 640 - 30);
+
+    // Ilustrasi / Potret Artistik
+    if (type === 'groom') {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '84px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🤵', 256, 250);
+
+      ctx.fillStyle = '#fde047';
+      ctx.font = 'bold 26px sans-serif';
+      ctx.fillText('THE GROOM', 256, 330);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = 'italic 20px serif';
+      ctx.fillText('Arya Wicaksono, S.T.', 256, 370);
+    } else if (type === 'bride') {
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '84px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('👰', 256, 250);
+
+      ctx.fillStyle = '#f43f5e';
+      ctx.font = 'bold 26px sans-serif';
+      ctx.fillText('THE BRIDE', 256, 330);
+
+      ctx.fillStyle = '#831843';
+      ctx.font = 'italic 20px serif';
+      ctx.fillText('Nadia Larasati, M.Ds.', 256, 370);
+    } else {
+      // Mempelai Berdua
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '76px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('💍 💐 💍', 256, 230);
+
+      ctx.fillStyle = '#fde047';
+      ctx.font = 'bold 36px serif';
+      ctx.fillText('Arya & Nadia', 256, 310);
+
+      ctx.fillStyle = '#fbcfe8';
+      ctx.font = 'italic 22px serif';
+      ctx.fillText('Eternal Love & Harmony', 256, 355);
+
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '16px sans-serif';
+      ctx.fillText('• 24 Oktober 2026 •', 256, 390);
     }
 
-    // Taburan Bunga Mawar Merah & Putih di Sepanjang Cincin
-    for (let i = 0; i < 30; i++) {
-      const angle = (i / 30) * Math.PI * 2;
-      const fx = Math.cos(angle) * ringRadius;
-      const fz = Math.sin(angle) * ringRadius;
-      const flower = new THREE.Mesh(
-        new THREE.SphereGeometry(0.18, 6, 6),
-        i % 2 === 0 ? this.materials.flowerRose : this.materials.flowerWhite
-      );
-      flower.position.set(fx, 0.5, fz);
-      ringGroup.add(flower);
-    }
+    // Plat Nama Emas di Bagian Bawah Kanvas
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.fillRect(45, 470, 512 - 90, 120);
+    ctx.strokeStyle = '#d4af37';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(45, 470, 512 - 90, 120);
 
-    // Altar Tengah / Pedestal Hati
-    const centerPedestal = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.7, 0.8, 0.4, 16),
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 28px serif';
+    ctx.fillText(title, 256, 520);
+
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = '19px sans-serif';
+    ctx.fillText(subtitle, 256, 560);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    return texture;
+  }
+
+  // Helper: Membuat Standing Easel Kayu 3D dengan Lukisan Berbingkai Emas
+  createEaselPainting(type, title, subtitle, isMain = false) {
+    const easelGroup = new THREE.Group();
+    const scale = isMain ? 1.28 : 1.0;
+
+    const woodMat = this.materials.woodWarm;
+    const goldMat = new THREE.MeshLambertMaterial({ color: 0xd4af37 });
+
+    // 1. Tripod Kaki Kayu Easel (Kiri, Kanan, dan Penyangga Belakang)
+    const legGeo = new THREE.CylinderGeometry(0.04 * scale, 0.045 * scale, 2.7 * scale, 6);
+
+    const legLeft = new THREE.Mesh(legGeo, woodMat);
+    legLeft.position.set(-0.55 * scale, 1.3 * scale, 0);
+    legLeft.rotation.z = -0.15;
+    legLeft.rotation.x = -0.12;
+    easelGroup.add(legLeft);
+
+    const legRight = new THREE.Mesh(legGeo, woodMat);
+    legRight.position.set(0.55 * scale, 1.3 * scale, 0);
+    legRight.rotation.z = 0.15;
+    legRight.rotation.x = -0.12;
+    easelGroup.add(legRight);
+
+    const legBack = new THREE.Mesh(legGeo, woodMat);
+    legBack.position.set(0, 1.3 * scale, -0.65 * scale);
+    legBack.rotation.x = 0.28;
+    easelGroup.add(legBack);
+
+    // Tiang Tengah Vertikal
+    const spineGeo = new THREE.CylinderGeometry(0.035 * scale, 0.035 * scale, 2.8 * scale, 6);
+    const spine = new THREE.Mesh(spineGeo, woodMat);
+    spine.position.set(0, 1.4 * scale, -0.12 * scale);
+    spine.rotation.x = -0.12;
+    easelGroup.add(spine);
+
+    // Dudukan / Rak Penyangga Kanvas
+    const shelfGeo = new THREE.BoxGeometry(1.6 * scale, 0.08 * scale, 0.14 * scale);
+    const shelf = new THREE.Mesh(shelfGeo, woodMat);
+    shelf.position.set(0, 0.95 * scale, 0.05 * scale);
+    shelf.rotation.x = -0.12;
+    easelGroup.add(shelf);
+
+    // 2. Bingkai Emas Mewah Lukisan (Gold Frame)
+    const canvasWidth = 1.25 * scale;
+    const canvasHeight = 1.55 * scale;
+    const frameDepth = 0.07 * scale;
+
+    const frameGeo = new THREE.BoxGeometry(canvasWidth + 0.12 * scale, canvasHeight + 0.12 * scale, frameDepth);
+    const frameMesh = new THREE.Mesh(frameGeo, goldMat);
+    frameMesh.position.set(0, (0.95 + canvasHeight / 2) * scale, 0.08 * scale);
+    frameMesh.rotation.x = -0.12;
+    easelGroup.add(frameMesh);
+
+    // 3. Kanvas Lukisan Potret
+    const paintingTexture = this.createPaintingTexture(type, title, subtitle);
+    const canvasMat = new THREE.MeshBasicMaterial({ map: paintingTexture });
+    const canvasGeo = new THREE.PlaneGeometry(canvasWidth, canvasHeight);
+    const canvasMesh = new THREE.Mesh(canvasGeo, canvasMat);
+    canvasMesh.position.set(0, 0, frameDepth / 2 + 0.005);
+    frameMesh.add(canvasMesh);
+
+    // 4. Hiasan Bunga Mawar di Pojok Bingkai
+    const flowerAccent = new THREE.Mesh(
+      new THREE.SphereGeometry(0.12 * scale, 6, 6),
+      type === 'groom' ? this.materials.flowerYellow : (type === 'bride' ? this.materials.flowerPink : this.materials.flowerRose)
+    );
+    flowerAccent.position.set(canvasWidth / 2, canvasHeight / 2, frameDepth / 2 + 0.04);
+    frameMesh.add(flowerAccent);
+
+    // Pot Bunga Segar di Kaki Easel
+    const pot = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.18 * scale, 0.14 * scale, 0.32 * scale, 8),
       this.materials.pathBorder
     );
-    centerPedestal.position.y = 0.2;
-    ringGroup.add(centerPedestal);
+    pot.position.set(0.65 * scale, 0.16 * scale, 0.2 * scale);
+    easelGroup.add(pot);
 
-    const coupleHeart = new THREE.Mesh(
-      new THREE.TorusGeometry(0.48, 0.1, 8, 16),
+    const potRose = new THREE.Mesh(
+      new THREE.SphereGeometry(0.2 * scale, 6, 6),
       this.materials.flowerRose
     );
-    coupleHeart.position.set(0, 0.85, 0);
-    coupleHeart.rotation.z = Math.PI / 4;
-    ringGroup.add(coupleHeart);
+    potRose.position.set(0.65 * scale, 0.38 * scale, 0.2 * scale);
+    easelGroup.add(potRose);
+
+    return easelGroup;
+  }
+
+  // D. GALERI PAMERAN LUKISAN FOTO PASANGAN (OUTDOOR PREWEDDING ART EXHIBITION)
+  // Menampilkan lukisan-lukisan potret kedua mempelai di taman samping check point (-8, -10)
+  buildCouplePaintingsSection(x, z) {
+    const galleryGroup = new THREE.Group();
+    galleryGroup.position.set(x, 0, z);
+    this.scene.add(galleryGroup);
+
+    // Karpet Beludru Merah Galeri Seni Terbuka di Rumput
+    const carpetGeo = new THREE.PlaneGeometry(3.6, 5.8);
+    carpetGeo.rotateX(-Math.PI / 2);
+    const carpet = new THREE.Mesh(carpetGeo, new THREE.MeshLambertMaterial({ color: 0x851c27 }));
+    carpet.position.set(0, 0.025, 0);
+    galleryGroup.add(carpet);
+
+    // List Tepi Emas Karpet Pameran
+    const borderGeo = new THREE.PlaneGeometry(3.8, 6.0);
+    borderGeo.rotateX(-Math.PI / 2);
+    const border = new THREE.Mesh(borderGeo, new THREE.MeshLambertMaterial({ color: 0xd4af37 }));
+    border.position.set(0, 0.02, 0);
+    galleryGroup.add(border);
+
+    // 1. Lukisan Utama Mempelai Berdua (Center - Besar, menghadap ke arah jalan +X)
+    const couplePainting = this.createEaselPainting('couple', 'Arya & Nadia', 'Eternal Harmony', true);
+    couplePainting.position.set(0, 0, 0);
+    couplePainting.rotation.y = Math.PI / 2; // Menghadap langsung ke jalan setapak tempat pemain berdiri
+    galleryGroup.add(couplePainting);
+
+    // 2. Lukisan Mempelai Wanita (Bride - Sisi Kanan/Utara, sedikit melengkung ke pemain)
+    const bridePainting = this.createEaselPainting('bride', 'Nadia Larasati', 'The Bride', false);
+    bridePainting.position.set(0.35, 0, -1.8);
+    bridePainting.rotation.y = Math.PI / 2 + 0.22;
+    galleryGroup.add(bridePainting);
+
+    // 3. Lukisan Mempelai Pria (Groom - Sisi Kiri/Selatan, sedikit melengkung ke pemain)
+    const groomPainting = this.createEaselPainting('groom', 'Arya Wicaksono', 'The Groom', false);
+    groomPainting.position.set(0.35, 0, 1.8);
+    groomPainting.rotation.y = Math.PI / 2 - 0.22;
+    galleryGroup.add(groomPainting);
+
+    // Taburan Bunga Mawar & Vas Elegan di Sepanjang Sisi Depan Pameran
+    for (let fz = -2.6; fz <= 2.6; fz += 0.9) {
+      const flower = new THREE.Mesh(
+        new THREE.SphereGeometry(0.12, 6, 6),
+        Math.abs(fz) % 2 === 0 ? this.materials.flowerRose : this.materials.flowerWhite
+      );
+      flower.position.set(1.6, 0.08, fz);
+      galleryGroup.add(flower);
+    }
+
+    // Dua Lentera Taman Antik Menerangi Galeri Pameran Lukisan
+    this.addLantern(galleryGroup, -0.6, 2.4, -2.4);
+    this.addLantern(galleryGroup, -0.6, 2.4, 2.4);
   }
 
   // E. PANGGUNG GALERI FOTO TERBUKA (OUTDOOR GALLERY DECK - Berada di Luar Jalan)
@@ -545,52 +736,69 @@ export class WeddingMap {
     });
   }
 
-  // G. ALTAR BUKU TAMU & RSVP (OUTDOOR RECEPTION DESK - Berada di Luar Jalan Samping Checkpoint)
+  // G. ALTAR BUKU TAMU & RSVP (OUTDOOR RECEPTION DESK - Berada di Tengah Jalan Checkpoint)
   buildRsvpAltar(x, z) {
     const rsvpGroup = new THREE.Group();
     rsvpGroup.position.set(x, 0, z);
     this.scene.add(rsvpGroup);
 
-    // Meja Resepsionis Kayu Pedesaan
-    const deskGeo = new THREE.BoxGeometry(2.0, 0.75, 0.9);
+    // Meja Resepsionis Kayu Pedesaan di Tengah Jalur
+    const deskGeo = new THREE.BoxGeometry(1.8, 0.75, 0.65);
     const desk = new THREE.Mesh(deskGeo, this.materials.woodWarm);
-    desk.position.set(0, 0.375, 0);
+    desk.position.set(0, 0.375, -0.45);
     rsvpGroup.add(desk);
 
     // Taplak Meja Krem Elegan
-    const clothGeo = new THREE.BoxGeometry(2.05, 0.4, 0.95);
+    const clothGeo = new THREE.BoxGeometry(1.86, 0.4, 0.7);
     const cloth = new THREE.Mesh(clothGeo, this.materials.tentFabric);
-    cloth.position.set(0, 0.58, 0);
+    cloth.position.set(0, 0.58, -0.45);
     rsvpGroup.add(cloth);
 
-    // Kotak Surat Emas & Buku Tamu
+    // Kotak Angpao Emas & Buku Tamu
     const mailbox = new THREE.Mesh(
-      new THREE.BoxGeometry(0.4, 0.45, 0.35),
+      new THREE.BoxGeometry(0.35, 0.38, 0.3),
       this.materials.goldAcsent
     );
-    mailbox.position.set(-0.55, 0.95, 0);
+    mailbox.position.set(-0.35, 0.92, -0.45);
     rsvpGroup.add(mailbox);
 
     const book = new THREE.Mesh(
-      new THREE.BoxGeometry(0.45, 0.06, 0.35),
+      new THREE.BoxGeometry(0.42, 0.06, 0.32),
       this.materials.plaqueBg
     );
-    book.position.set(0.45, 0.81, 0);
+    book.position.set(0.25, 0.81, -0.45);
     rsvpGroup.add(book);
 
-    // Lentera Meja
-    this.addLantern(rsvpGroup, 0.8, 1.1, 0);
+    // Rangkaian Bunga Segar di Meja Penerima Tamu
+    [-0.75, 0.75].forEach(sideX => {
+      const vase = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.12, 0.1, 0.28, 8),
+        this.materials.pathBorder
+      );
+      vase.position.set(sideX, 0.88, -0.45);
+      rsvpGroup.add(vase);
 
-    // PAGAR AYU (Penerima Tamu Berbusana Anggun Cantik Tradisional Menjaga Meja di Sisi Luar)
+      const flowers = new THREE.Mesh(
+        new THREE.SphereGeometry(0.16, 6, 6),
+        this.materials.flowerRose
+      );
+      flowers.position.set(sideX, 1.05, -0.45);
+      rsvpGroup.add(flowers);
+    });
+
+    // Lentera Meja Hangat
+    this.addLantern(rsvpGroup, 0, 1.15, -0.45);
+
+    // PAGAR AYU (Penerima Tamu Berbusana Anggun Cantik Tradisional Berdiri di Sisi Kiri & Kanan Meja di Tengah Jalan)
     const pagarAyuL = new Character3D('pagar_ayu');
-    pagarAyuL.group.position.set(-0.7, 0, -0.8);
-    pagarAyuL.group.rotation.y = 0.25; // Menghadap tamu yang lewat di jalan
+    pagarAyuL.group.position.set(-1.0, 0, -0.3);
+    pagarAyuL.group.rotation.y = 0.2; // Menyambut ramah para tamu yang berjalan datang
     rsvpGroup.add(pagarAyuL.group);
     this.animatedDecorations.push(pagarAyuL);
 
     const pagarAyuR = new Character3D('pagar_ayu');
-    pagarAyuR.group.position.set(0.7, 0, -0.8);
-    pagarAyuR.group.rotation.y = -0.25;
+    pagarAyuR.group.position.set(1.0, 0, -0.3);
+    pagarAyuR.group.rotation.y = -0.2; // Menyambut ramah para tamu yang berjalan datang
     rsvpGroup.add(pagarAyuR.group);
     this.animatedDecorations.push(pagarAyuR);
   }

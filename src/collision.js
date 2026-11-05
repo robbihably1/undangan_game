@@ -20,47 +20,47 @@ export class CollisionSystem {
   // Inisialisasi segmen jalan setapak sesuai layout referensi
   initPathNetwork() {
     // 1. Gerbang Masuk & Lorong Bawah (Entrance Trail)
-    this.addSegment(0, 22, 0, 14, 1.6);
-    this.addCircle(0, 18, 2.2); // Gerbang
+    this.addSegment(0, 22, 0, 14, 1.35);
+    this.addCircle(0, 18, 1.35); // Gerbang
 
     // 2. Persimpangan Bawah (Depan Tenda Resepsi & Photobooth)
-    this.addSegment(0, 14, 0, 6, 1.5);
-    this.addCircle(0, 6, 2.6);
+    this.addSegment(0, 14, 0, 6, 1.35);
+    this.addCircle(0, 6, 1.35);
 
-    // 3. Area Resepsi & Akad (Check point di lingkaran x = -9, z = 7; Panggung Pelaminan taman di rumput samping x = -13.0, z = 7)
-    this.addSegment(0, 6, -6, 6.5, 1.4);
-    this.addSegment(-6, 6.5, -9, 7, 1.4);
-    this.addCircle(-9, 7, 2.2); // Check point bersih terbuka
+    // 3. Area Resepsi & Akad (Check point di lingkaran x = -9, z = 7)
+    this.addSegment(0, 6, -6, 6.5, 1.3);
+    this.addSegment(-6, 6.5, -9, 7, 1.3);
+    this.addCircle(-9, 7, 1.35); // Check point bersih kompak
 
-    // 4. Area Photobooth (Check point di lingkaran x = 8, z = 7; Spot Foto taman di rumput samping x = 11.8, z = 7)
-    this.addSegment(0, 6, 5, 6.5, 1.4);
-    this.addSegment(5, 6.5, 8, 7, 1.4);
-    this.addCircle(8, 7, 2.2); // Check point bersih terbuka
+    // 4. Area Photobooth (Check point di lingkaran x = 8, z = 7)
+    this.addSegment(0, 6, 5, 6.5, 1.3);
+    this.addSegment(5, 6.5, 8, 7, 1.3);
+    this.addCircle(8, 7, 1.35); // Check point bersih kompak
 
     // 5. Jalur Utama Tengah ke Atas (Menuju Lingkaran Pasangan & Galeri)
-    this.addSegment(0, 6, 0, -2, 1.5);
-    this.addCircle(0, -2, 2.2); // Check point RSVP terbuka plong di jalan tengah (Meja & Pagar Ayu di rumput samping x = 3.2, z = -2)
+    this.addSegment(0, 6, 0, -2, 1.35);
+    this.addCircle(0, -2, 1.4); // Check point RSVP di tengah dijaga Pagar Ayu
 
-    // 6. Lingkaran Bunga Pasangan (Kiri Atas / Barat Laut: x = -8, z = -10)
+    // 6. Lingkaran Galeri Lukisan Pasangan (Kiri Atas / Barat Laut: x = -8, z = -10)
     // Jalur melingkar (Circular ring path)
-    this.addSegment(0, -2, -5, -4, 1.4);
-    this.addSegment(-5, -4, -8, -6, 1.4);
-    this.addSegment(-8, -6, -8, -10, 1.4);
-    this.addCircle(-8, -10, 2.6); // Check point lingkaran pasangan terbuka (Dekorasi pasangan di taman rumput samping)
+    this.addSegment(0, -2, -5, -4, 1.3);
+    this.addSegment(-5, -4, -8, -6, 1.3);
+    this.addSegment(-8, -6, -8, -10, 1.3);
+    this.addCircle(-8, -10, 1.35); // Check point pameran lukisan pasangan
 
-    // 7. Panggung Galeri Foto (Check point di lingkaran x = 8, z = -5; Panggung Galeri di rumput samping x = 12.0, z = -5)
-    this.addSegment(0, -2, 5, -3, 1.4);
-    this.addSegment(5, -3, 8, -5, 1.4);
-    this.addCircle(8, -5, 2.2); // Check point bersih terbuka
+    // 7. Panggung Galeri Foto (Check point di lingkaran x = 8, z = -5)
+    this.addSegment(0, -2, 5, -3, 1.3);
+    this.addSegment(5, -3, 8, -5, 1.3);
+    this.addCircle(8, -5, 1.35); // Check point galeri foto
 
     // 8. Jembatan Kayu Melintasi Kolam Teratai (Atas Timur: x = 6, z = -12)
     this.addSegment(8, -5, 7, -9, 1.3);
-    this.addSegment(7, -9, 4, -13, 1.4); // Jembatan melengkung
-    this.addCircle(4, -13, 2.0);
+    this.addSegment(7, -9, 4, -13, 1.3); // Jembatan melengkung
+    this.addCircle(4, -13, 1.35);
 
     // 9. Jalur Penghubung Melingkar Atas (Dari Jembatan ke Taman Pasangan)
     this.addSegment(4, -13, -2, -13, 1.3);
-    this.addSegment(-2, -13, -8, -10, 1.4);
+    this.addSegment(-2, -13, -8, -10, 1.3);
 
     // 10. Jalur Sisi Luar (Outer Loop Barat & Timur)
     this.addSegment(-9, 7, -11, 1, 1.2);
