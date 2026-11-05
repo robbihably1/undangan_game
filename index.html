@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Wedding of Arya & Nadia – 3D RPG Adventure Invitation</title>
+  <meta name="description" content="Undangan Pernikahan Interaktif 3D RPG Game Arya Wicaksono & Nadia Larasati. Pilih karaktermu dan jelajahi taman pernikahan bahagia kami!">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <!-- 3D Game Canvas Container -->
+  <div id="game-container"></div>
+
+  <!-- In-Game Top HUD -->
+  <header id="game-hud">
+    <div class="hud-left">
+      <div class="hud-crest">
+        <span class="crest-icon">💍</span>
+        <div class="crest-text">
+          <span class="crest-title">Arya & Nadia</span>
+          <span class="crest-subtitle">24 Oktober 2026</span>
+        </div>
+      </div>
+      <!-- Quest Tracker -->
+      <div class="quest-tracker">
+        <div class="quest-info">
+          <span class="quest-label">Eksplorasi:</span>
+          <span id="quest-progress-text" class="quest-value">0/7 Lokasi</span>
+        </div>
+        <div class="quest-bar-bg">
+          <div id="quest-progress-fill" class="quest-bar-fill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hud-right">
+      <!-- Tombol Vintage Musik seperti referensi -->
+      <button id="btn-toggle-sound" class="vintage-music-btn" title="Musik Romantis (On/Off)">
+        <span class="music-icon">🎵</span>
+        <span class="music-label">MUSIK ON</span>
+      </button>
+      <button id="btn-open-menu" class="hud-circle-btn" title="Pilih Karakter / Menu">👤</button>
+      <div class="minimap-wrapper">
+        <canvas id="minimap-canvas" width="90" height="90"></canvas>
+        <span class="minimap-label">Peta Taman</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile On-Screen Controls -->
+  <div id="mobile-controls">
+    <!-- Vintage Compass / Virtual Joystick (Kiri Bawah) -->
+    <div class="joystick-wrapper">
+      <div id="joystick-base" class="joystick-base">
+        <div id="joystick-thumb" class="joystick-thumb">
+          <span class="joystick-cross">+</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tombol Aksi [A] Vintage (Kanan Bawah) -->
+    <button id="btn-mobile-interact" class="vintage-action-btn" aria-label="Interaksi">
+      <span class="action-letter">A</span>
+      <span class="action-sub">ACTION</span>
+    </button>
+  </div>
+
+  <!-- Speech Bubble Interaksi Mengambang (Seperti di Referensi Gambar: SAPA TAMU) -->
+  <div class="interaction-bubble-container">
+    <button id="btn-speech-bubble" class="speech-bubble-btn">
+      <span class="bubble-icon">💬</span>
+      <span id="bubble-text" class="bubble-text">SAPA TAMU</span>
+    </button>
+  </div>
+
+  <!-- BOTTOM RPG NAVIGATION TOOLBAR (Sesuai Persis dengan Gambar Referensi) -->
+  <nav id="rpg-bottom-bar" class="rpg-bottom-bar">
+    <button class="nav-item" data-action="couple">
+      <span class="nav-icon">👫</span>
+      <span class="nav-label">PASANGAN</span>
+    </button>
+    <button class="nav-item" data-action="resepsi">
+      <span class="nav-icon">📜</span>
+      <span class="nav-label">ACARA</span>
+    </button>
+    <button class="nav-item" data-action="gallery">
+      <span class="nav-icon">📖</span>
+      <span class="nav-label">GALERI</span>
+    </button>
+    <button class="nav-item" data-action="rsvp">
+      <span class="nav-icon">💌</span>
+      <span class="nav-label">UCAPAN & RSVP</span>
+    </button>
+    <button class="nav-item" data-action="gift">
+      <span class="nav-icon">🎁</span>
+      <span class="nav-label">HADIAH</span>
+    </button>
+    <button class="nav-item" data-action="lovestory">
+      <span class="nav-icon">🕰️</span>
+      <span class="nav-label">KISAH</span>
+    </button>
+  </nav>
+
+  <!-- Floating Proximity Badge -->
+  <div id="interact-badge" class="interact-badge">
+    <!-- Diisi secara dinamis oleh interaction.js -->
+  </div>
+
+  <!-- Panduan Kontrol Desktop -->
+  <div id="desktop-controls-hint" class="desktop-controls-hint">
+    <span>Gunakan <strong>W, A, S, D</strong> atau <strong>Panah</strong> untuk berjalan di jalan setapak | Tekan <strong>[E]</strong> Interaksi | <strong>[H]</strong> Debug Jalan</span>
+  </div>
+
+  <!-- Modal Dialog Informasi Undangan -->
+  <div id="modal-overlay" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+      <button id="btn-close-modal" class="btn-close-modal" aria-label="Tutup">&times;</button>
+      <div id="modal-card-content" class="modal-card-content">
+        <!-- Konten dimuat dinamis oleh ui.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- HALAMAN PEMILIHAN KARAKTER (Muncul sebelum masuk map) -->
+  <div id="char-select-screen" class="char-select-screen">
+    <div class="char-select-card">
+      <div class="select-header">
+        <span class="select-badge">UNDANGAN PERNIKAHAN 3D RPG</span>
+        <h1>The Wedding Adventure</h1>
+        <p class="select-subtitle">Pilih karakter 3D Anda untuk mulai menjelajahi taman pernikahan Arya & Nadia</p>
+      </div>
+
+      <div class="characters-grid">
+        <!-- Karakter Pria (Boy) -->
+        <div id="card-boy" class="character-card selected">
+          <div class="canvas-preview-container">
+            <canvas id="preview-boy-canvas" width="200" height="240"></canvas>
+          </div>
+          <div class="card-info">
+            <span class="char-tag boy-tag">Laki-Laki</span>
+            <h3>Arya's Style</h3>
+            <p>Midnight Formal Suit & Dasi Kupu-kupu Emas</p>
+          </div>
+          <div class="check-mark">✓</div>
+        </div>
+
+        <!-- Karakter Wanita (Girl) -->
+        <div id="card-girl" class="character-card">
+          <div class="canvas-preview-container">
+            <canvas id="preview-girl-canvas" width="200" height="240"></canvas>
+          </div>
+          <div class="card-info">
+            <span class="char-tag girl-tag">Perempuan</span>
+            <h3>Nadia's Style</h3>
+            <p>Gaun Pengantin Renda, Tiara & Buket Bunga</p>
+          </div>
+          <div class="check-mark">✓</div>
+        </div>
+      </div>
+
+      <div class="select-actions">
+        <button id="btn-select-character" class="btn-primary-large">PILIH KARAKTER ✨</button>
+        <button id="btn-start-game" class="btn-primary-large btn-start" style="display: none;">MULAI PETUALANGAN 🚀</button>
+      </div>
+
+      <p class="select-note">💡 Gunakan WASD / Panah di desktop atau Virtual Joystick di smartphone</p>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
