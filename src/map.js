@@ -108,15 +108,15 @@ export class WeddingMap {
     });
   }
 
-  // 2. Membangun Area-Area Sesuai Gambar Referensi
+  // 2. Membangun Area-Area Sesuai Gambar Referensi (Pos Berada di Samping Jalur Check Point)
   buildReferenceLocations() {
     this.buildWelcomeGate(0, 18);
-    this.buildReceptionTent(-9, 7);      // Tenda Pelaminan (+ ACARA)
-    this.buildWoodenPhotoBooth(8, 7);    // Bilik Foto Kayu (+ PHOTOBOOTH)
+    this.buildReceptionTent(-11.2, 7);    // Pos Pelaminan berada di samping check point (-9, 7)
+    this.buildWoodenPhotoBooth(10.2, 7);   // Pos Photobooth berada di samping check point (8, 7)
     this.buildCoupleFlowerRing(-8, -10); // Cincin Bunga (+ PASANGAN)
-    this.buildGalleryDeck(8, -5);        // Panggung Galeri (+ GALERI)
+    this.buildGalleryDeck(10.2, -5);      // Panggung Galeri berada di samping check point (8, -5)
     this.buildPondAndBridge(5, -12);     // Kolam Teratai & Jembatan Lengkung
-    this.buildRsvpAltar(0, -2);          // Altar Buku Tamu (+ UCAPAN & RSVP)
+    this.buildRsvpAltar(2.4, -2);        // Altar Buku Tamu berada di samping check point (0, -2)
   }
 
   // A. GERBANG SELAMAT DATANG (WELCOME GATE at 0, 18)
@@ -591,14 +591,14 @@ export class WeddingMap {
     // Lentera Meja
     this.addLantern(rsvpGroup, 0.8, 1.1, -0.4);
 
-    // PAGAR AYU (Penerima Tamu Berbusana Anggun yang Menjaga Meja RSVP)
-    const pagarAyuL = new Character3D('girl');
+    // PAGAR AYU (Penerima Tamu Berbusana Anggun Cantik Tradisional yang Menjaga Meja RSVP)
+    const pagarAyuL = new Character3D('pagar_ayu');
     pagarAyuL.group.position.set(-0.7, 0, -1.1);
     pagarAyuL.group.rotation.y = 0.15; // Menghadap tamu yang datang dari arah depan
     rsvpGroup.add(pagarAyuL.group);
     this.animatedDecorations.push(pagarAyuL);
 
-    const pagarAyuR = new Character3D('girl');
+    const pagarAyuR = new Character3D('pagar_ayu');
     pagarAyuR.group.position.set(0.7, 0, -1.1);
     pagarAyuR.group.rotation.y = -0.15;
     rsvpGroup.add(pagarAyuR.group);
