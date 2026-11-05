@@ -27,44 +27,36 @@ export class CollisionSystem {
     this.addSegment(0, 14, 0, 6, 1.5);
     this.addCircle(0, 6, 2.6);
 
-    // 3. Tenda Resepsi & Akad (Check point di x = -9, z = 7; Pos Pelaminan di x = -11.2, z = 7)
+    // 3. Area Resepsi & Akad (Check point di lingkaran x = -9, z = 7; Panggung Pelaminan taman di rumput samping x = -13.0, z = 7)
     this.addSegment(0, 6, -6, 6.5, 1.4);
-    this.addSegment(-6, 6.5, -9, 7, 1.5);
-    this.addCircle(-9, 7, 2.4); // Check point terbuka plong
-    this.addSegment(-9, 7, -11.2, 7, 1.6); // Jalur masuk ke pos pelaminan di samping
-    this.addCircle(-11.2, 7, 2.2);
+    this.addSegment(-6, 6.5, -9, 7, 1.4);
+    this.addCircle(-9, 7, 2.2); // Check point bersih terbuka
 
-    // 4. Booth Foto Kayu (Check point di x = 8, z = 7; Pos Photobooth di x = 10.2, z = 7)
+    // 4. Area Photobooth (Check point di lingkaran x = 8, z = 7; Spot Foto taman di rumput samping x = 11.8, z = 7)
     this.addSegment(0, 6, 5, 6.5, 1.4);
     this.addSegment(5, 6.5, 8, 7, 1.4);
-    this.addCircle(8, 7, 2.2); // Check point terbuka plong
-    this.addSegment(8, 7, 10.2, 7, 1.5); // Jalur masuk ke pos photobooth di samping
-    this.addCircle(10.2, 7, 2.0);
+    this.addCircle(8, 7, 2.2); // Check point bersih terbuka
 
     // 5. Jalur Utama Tengah ke Atas (Menuju Lingkaran Pasangan & Galeri)
     this.addSegment(0, 6, 0, -2, 1.5);
-    this.addCircle(0, -2, 2.2); // Check point RSVP terbuka plong di jalan tengah
-    this.addSegment(0, -2, 2.4, -2, 1.4); // Altar RSVP berada di samping jalan (x = 2.4, z = -2)
-    this.addCircle(2.4, -2, 1.8);
+    this.addCircle(0, -2, 2.2); // Check point RSVP terbuka plong di jalan tengah (Meja & Pagar Ayu di rumput samping x = 3.2, z = -2)
 
     // 6. Lingkaran Bunga Pasangan (Kiri Atas / Barat Laut: x = -8, z = -10)
     // Jalur melingkar (Circular ring path)
     this.addSegment(0, -2, -5, -4, 1.4);
     this.addSegment(-5, -4, -8, -6, 1.4);
-    this.addSegment(-8, -6, -8, -10, 1.5);
-    this.addCircle(-8, -10, 3.2);
+    this.addSegment(-8, -6, -8, -10, 1.4);
+    this.addCircle(-8, -10, 2.6); // Check point lingkaran pasangan terbuka (Dekorasi pasangan di taman rumput samping)
 
-    // 7. Panggung Galeri Foto (Check point di x = 8, z = -5; Pos Galeri di x = 10.2, z = -5)
+    // 7. Panggung Galeri Foto (Check point di lingkaran x = 8, z = -5; Panggung Galeri di rumput samping x = 12.0, z = -5)
     this.addSegment(0, -2, 5, -3, 1.4);
-    this.addSegment(5, -3, 8, -5, 1.5);
-    this.addCircle(8, -5, 2.2); // Check point terbuka plong
-    this.addSegment(8, -5, 10.2, -5, 1.5); // Pos Galeri di samping
-    this.addCircle(10.2, -5, 2.2);
+    this.addSegment(5, -3, 8, -5, 1.4);
+    this.addCircle(8, -5, 2.2); // Check point bersih terbuka
 
     // 8. Jembatan Kayu Melintasi Kolam Teratai (Atas Timur: x = 6, z = -12)
     this.addSegment(8, -5, 7, -9, 1.3);
     this.addSegment(7, -9, 4, -13, 1.4); // Jembatan melengkung
-    this.addCircle(4, -13, 2.2);
+    this.addCircle(4, -13, 2.0);
 
     // 9. Jalur Penghubung Melingkar Atas (Dari Jembatan ke Taman Pasangan)
     this.addSegment(4, -13, -2, -13, 1.3);
@@ -122,23 +114,9 @@ export class CollisionSystem {
     return false;
   }
 
-  // Menentukan ketinggian permukaan tanah / lantai (Ground vs Dek Pos vs Jembatan Kolam)
+  // Menentukan ketinggian permukaan tanah / lantai (Jembatan Kayu Melintasi Kolam)
   getSurfaceHeight(x, z) {
-    // 1. Pos Resepsi (-11.2, 7) - Ketinggian lantai panggung kayu 0.28
-    const distPos = Math.hypot(x - (-11.2), z - 7);
-    if (distPos <= 3.2) {
-      const t = Math.max(0, Math.min(1, (3.2 - distPos) / 0.8));
-      return 0.28 * t;
-    }
-
-    // 2. Pos Photobooth (10.2, 7) - Ketinggian lantai bilik pos 0.25
-    const distBooth = Math.hypot(x - 10.2, z - 7);
-    if (distBooth <= 2.2) {
-      const t = Math.max(0, Math.min(1, (2.2 - distBooth) / 0.7));
-      return 0.25 * t;
-    }
-
-    // 3. Jembatan Melengkung di atas Kolam (Jalur dari (7, -9) ke (4, -13))
+    // Jembatan Melengkung di atas Kolam Teratai (Jalur dari (7, -9) ke (4, -13))
     const distToBridge = this.distToSegment(x, z, 7, -9, 4, -13);
     if (distToBridge <= 1.5) {
       const dx = 4 - 7;
@@ -146,15 +124,9 @@ export class CollisionSystem {
       const l2 = dx * dx + dz * dz;
       let t = ((x - 7) * dx + (z - (-9)) * dz) / l2;
       t = Math.max(0, Math.min(1, t));
+      // Parabola: arch height naik anggun melengkung di atas air kolam hingga 0.45
       const arch = Math.sin(t * Math.PI) * 0.35 + 0.15;
       return arch;
-    }
-
-    // 4. Dek Panggung Galeri (10.2, -5)
-    const distGal = Math.hypot(x - 10.2, z - (-5));
-    if (distGal <= 2.6) {
-      const t = Math.max(0, Math.min(1, (2.6 - distGal) / 0.7));
-      return 0.3 * t;
     }
 
     return 0;

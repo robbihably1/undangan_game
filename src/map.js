@@ -108,15 +108,15 @@ export class WeddingMap {
     });
   }
 
-  // 2. Membangun Area-Area Sesuai Gambar Referensi (Pos Berada di Samping Jalur Check Point)
+  // 2. Membangun Area Pesta Taman Terbuka (Outdoor Garden Party - Berada di Luar Jalan)
   buildReferenceLocations() {
     this.buildWelcomeGate(0, 18);
-    this.buildReceptionTent(-11.2, 7);    // Pos Pelaminan berada di samping check point (-9, 7)
-    this.buildWoodenPhotoBooth(10.2, 7);   // Pos Photobooth berada di samping check point (8, 7)
-    this.buildCoupleFlowerRing(-8, -10); // Cincin Bunga (+ PASANGAN)
-    this.buildGalleryDeck(10.2, -5);      // Panggung Galeri berada di samping check point (8, -5)
-    this.buildPondAndBridge(5, -12);     // Kolam Teratai & Jembatan Lengkung
-    this.buildRsvpAltar(2.4, -2);        // Altar Buku Tamu berada di samping check point (0, -2)
+    this.buildReceptionTent(-13.2, 7);    // Panggung Pelaminan Pesta Taman Terbuka di samping lingkaran (-9, 7)
+    this.buildWoodenPhotoBooth(11.8, 7);   // Spot Foto Taman Terbuka di samping lingkaran (8, 7)
+    this.buildCoupleFlowerRing(-11.5, -10); // Cincin Bunga Pasangan di samping lingkaran (-8, -10)
+    this.buildGalleryDeck(11.8, -5);      // Panggung Galeri Foto Terbuka di samping lingkaran (8, -5)
+    this.buildPondAndBridge(5, -12);     // Kolam Teratai & Jembatan Lengkung (Satu-satunya yang dilintasi jembatan)
+    this.buildRsvpAltar(3.2, -2);        // Meja Buku Tamu & Pagar Ayu di samping lingkaran jalan (0, -2)
   }
 
   // A. GERBANG SELAMAT DATANG (WELCOME GATE at 0, 18)
@@ -126,7 +126,7 @@ export class WeddingMap {
     this.scene.add(gateGroup);
 
     // Dua Tiang Gerbang Kayu Rustic
-    const postGeo = new THREE.CylinderGeometry(0.2, 0.25, 3.4, 8);
+    const postGeo = new THREE.CylinderGeometry(0.18, 0.22, 3.4, 8);
     const p1 = new THREE.Mesh(postGeo, this.materials.woodWarm);
     p1.position.set(-2.0, 1.7, 0);
     gateGroup.add(p1);
@@ -136,7 +136,7 @@ export class WeddingMap {
     gateGroup.add(p2);
 
     // Lengkungan Bunga Mawar Gerbang
-    const archGeo = new THREE.TorusGeometry(2.0, 0.22, 8, 20, Math.PI);
+    const archGeo = new THREE.TorusGeometry(2.0, 0.2, 8, 20, Math.PI);
     const arch = new THREE.Mesh(archGeo, this.materials.foliageGreen);
     arch.position.set(0, 2.7, 0);
     gateGroup.add(arch);
@@ -153,172 +153,174 @@ export class WeddingMap {
     }
 
     // Karpet Jalan Masuk
-    const carpetGeo = new THREE.PlaneGeometry(2.0, 5.0);
+    const carpetGeo = new THREE.PlaneGeometry(1.8, 4.6);
     carpetGeo.rotateX(-Math.PI / 2);
     const carpet = new THREE.Mesh(carpetGeo, new THREE.MeshLambertMaterial({ color: 0xa83232 }));
     carpet.position.set(0, 0.028, 0);
     gateGroup.add(carpet);
   }
 
-  // B. POS TENDA RESEPSI TERBUKA & AKAD NIKAH (Bisa Dilalui Pemain + Mempelai Sedang Resepsi)
+  // B. PELAMINAN PESTA TAMAN TERBUKA (OUTDOOR GARDEN RECEPTION - Berada di Luar Jalan)
   buildReceptionTent(x, z) {
     const tentGroup = new THREE.Group();
     tentGroup.position.set(x, 0, z);
     this.scene.add(tentGroup);
 
-    // Lantai Panggung Kayu Pos (Rendah & bisa dipijak pemain)
-    const deckGeo = new THREE.CylinderGeometry(3.3, 3.5, 0.28, 20);
+    // Dek Panggung Kayu Elegan di Rumput Taman (Tanpa dinding, terbuka 100%)
+    const deckGeo = new THREE.CylinderGeometry(3.6, 3.8, 0.26, 24);
     const deck = new THREE.Mesh(deckGeo, this.materials.woodWarm);
-    deck.position.y = 0.14;
+    deck.position.y = 0.13;
     tentGroup.add(deck);
 
-    // Karpet Merah Megah di Atas Lantai Pos
-    const carpetGeo = new THREE.CircleGeometry(2.4, 20);
+    // Karpet Merah Pelaminan Pesta Taman
+    const carpetGeo = new THREE.CircleGeometry(2.6, 24);
     carpetGeo.rotateX(-Math.PI / 2);
-    const carpetMat = new THREE.MeshLambertMaterial({ color: 0x991b1b });
-    const carpet = new THREE.Mesh(carpetGeo, carpetMat);
-    carpet.position.y = 0.285;
+    const carpet = new THREE.Mesh(carpetGeo, new THREE.MeshLambertMaterial({ color: 0x991b1b }));
+    carpet.position.y = 0.265;
     tentGroup.add(carpet);
 
-    // Tiang-tiang Pos di Tepi Luar (Tengahnya plong lapang agar karakter leluasa lewat)
-    const postAngles = [Math.PI * 0.25, Math.PI * 0.75, Math.PI * 1.25, Math.PI * 1.75];
-    postAngles.forEach(ang => {
-      const px = Math.cos(ang) * 2.8;
-      const pz = Math.sin(ang) * 2.8;
-      const col = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.1, 0.12, 3.2, 8),
+    // Pergola Kayu Rustic Terbuka (Atap Rangka Bunga Terbuka Tanpa Kain Penutup)
+    const postCoords = [
+      [-2.4, -2.0], [2.4, -2.0],
+      [-2.4, 2.0], [2.4, 2.0]
+    ];
+    postCoords.forEach(c => {
+      const pole = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.1, 0.12, 3.4, 8),
         this.materials.woodWarm
       );
-      col.position.set(px, 1.6, pz);
-      tentGroup.add(col);
+      pole.position.set(c[0], 1.7, c[1]);
+      tentGroup.add(pole);
 
-      // Lentera di tiang pos
-      this.addLantern(tentGroup, px * 0.85, 2.6, pz * 0.85);
+      // Lentera Gantung Antik di Setiap Tiang
+      this.addLantern(tentGroup, c[0], 2.8, c[1]);
     });
 
-    // Atap Kanopi Pos Melengkung Tinggi (Pemain bebas lewat di bawahnya)
-    const roofGeo = new THREE.ConeGeometry(3.8, 1.5, 18);
-    const roof = new THREE.Mesh(roofGeo, this.materials.tentRoof);
-    roof.position.y = 3.9;
-    tentGroup.add(roof);
+    // Balok Rangka Pergola Kayu di Atas (Terbuka langsung ke langit)
+    const beam1 = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.14, 0.14), this.materials.woodWarm);
+    beam1.position.set(0, 3.4, -2.0);
+    tentGroup.add(beam1);
 
-    // Tirai & Drapery Putih Elegan di Sekeliling Atas
-    const drapeGeo = new THREE.TorusGeometry(3.0, 0.14, 6, 20);
-    drapeGeo.rotateX(Math.PI / 2);
-    const drape = new THREE.Mesh(drapeGeo, this.materials.tentFabric);
-    drape.position.y = 3.1;
-    tentGroup.add(drape);
+    const beam2 = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.14, 0.14), this.materials.woodWarm);
+    beam2.position.set(0, 3.4, 2.0);
+    tentGroup.add(beam2);
 
-    // Lengkungan Bunga di Atas Pintu Masuk Pos
-    const flowerArchGeo = new THREE.TorusGeometry(2.2, 0.18, 6, 20, Math.PI);
-    const flowerArch = new THREE.Mesh(flowerArchGeo, this.materials.foliageGreen);
-    flowerArch.position.set(0, 2.6, 1.8);
-    tentGroup.add(flowerArch);
+    // Untaian Sulur Bunga & Lampu Gantung Pesta Taman (Garden Fairylights & Floral Garland)
+    for (let f = -2.2; f <= 2.2; f += 0.8) {
+      const garland = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.04, 4.0, 6),
+        this.materials.foliageGreen
+      );
+      garland.rotateX(Math.PI / 2);
+      garland.position.set(f, 3.35, 0);
+      tentGroup.add(garland);
 
-    for (let i = 0; i < 11; i++) {
-      const angle = (i / 10) * Math.PI;
+      // Lampu pijar pesta taman
+      const bulb = new THREE.Mesh(
+        new THREE.SphereGeometry(0.06, 6, 6),
+        new THREE.MeshBasicMaterial({ color: 0xfef08a })
+      );
+      bulb.position.set(f, 3.1, (Math.random() - 0.5) * 3);
+      tentGroup.add(bulb);
+    }
+
+    // Backdrop Pelaminan Bunga Terbuka di Belakang (Facing East towards checkpoint)
+    const archBackdrop = new THREE.Mesh(
+      new THREE.TorusGeometry(1.6, 0.18, 8, 24, Math.PI),
+      this.materials.foliageGreen
+    );
+    archBackdrop.position.set(0, 1.8, -2.1);
+    tentGroup.add(archBackdrop);
+
+    // Mawar Hiasan Lengkungan
+    for (let i = 0; i < 14; i++) {
+      const ang = (i / 13) * Math.PI;
       const fl = new THREE.Mesh(
         new THREE.SphereGeometry(0.14, 6, 6),
-        i % 2 === 0 ? this.materials.flowerRose : this.materials.flowerPink
+        i % 2 === 0 ? this.materials.flowerRose : this.materials.flowerWhite
       );
-      fl.position.set(Math.cos(angle) * 2.2, 2.6 + Math.sin(angle) * 2.2, 1.88);
+      fl.position.set(Math.cos(ang) * 1.6, 1.8 + Math.sin(ang) * 1.6, -2.0);
       tentGroup.add(fl);
     }
 
-    // Backdrop Pelaminan di Sisi Belakang (x = 0, z = -2.1)
-    const backdropGeo = new THREE.BoxGeometry(2.6, 2.2, 0.15);
-    const backdropMat = new THREE.MeshLambertMaterial({ color: 0xfef3c7 });
-    const backdrop = new THREE.Mesh(backdropGeo, backdropMat);
-    backdrop.position.set(0, 1.35, -2.1);
-    tentGroup.add(backdrop);
-
-    // Bunga Backdrop
-    const decorRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.8, 0.1, 8, 16),
-      this.materials.flowerRose
+    // Sofa Mewah Pelaminan Mempelai
+    const sofa = new THREE.Mesh(
+      new THREE.BoxGeometry(2.0, 0.65, 0.65),
+      new THREE.MeshLambertMaterial({ color: 0xb45309 })
     );
-    decorRing.position.set(0, 1.6, -2.0);
-    tentGroup.add(decorRing);
-
-    // Kursi Pelaminan Mempelai
-    const sofaGeo = new THREE.BoxGeometry(1.6, 0.65, 0.6);
-    const sofaMat = new THREE.MeshLambertMaterial({ color: 0xb45309 });
-    const sofa = new THREE.Mesh(sofaGeo, sofaMat);
-    sofa.position.set(0, 0.55, -1.8);
+    sofa.position.set(0, 0.55, -1.5);
     tentGroup.add(sofa);
 
-    // Mempelai Pria (Arya) & Wanita (Nadia) Sedang Berdiri Ramah Menyambut Tamu di Pos Pelaminan
+    // Mempelai Pria (Arya) & Wanita (Nadia) Sedang Berdiri Ramah Menyambut Tamu
     const groomNpc = new Character3D('boy');
-    groomNpc.group.position.set(-0.55, 0.28, -1.2);
-    groomNpc.group.rotation.y = 0.2; // Sedikit menghadap tengah/depan
+    groomNpc.group.position.set(-0.6, 0.26, -0.9);
+    groomNpc.group.rotation.y = 0.35; // Menghadap ke arah pemain di jalan
     tentGroup.add(groomNpc.group);
     this.animatedDecorations.push(groomNpc);
 
     const brideNpc = new Character3D('girl');
-    brideNpc.group.position.set(0.55, 0.28, -1.2);
-    brideNpc.group.rotation.y = -0.2;
+    brideNpc.group.position.set(0.6, 0.26, -0.9);
+    brideNpc.group.rotation.y = -0.35;
     tentGroup.add(brideNpc.group);
     this.animatedDecorations.push(brideNpc);
 
-    // Barel Bunga di Kiri & Kanan Depan Tangga Pos
-    this.addBarrelFlower(tentGroup, -2.8, 0.28, 2.0);
-    this.addBarrelFlower(tentGroup, 2.8, 0.28, 2.0);
+    // Meja Jamuan & Pot Bunga Pesta Taman
+    this.addBarrelFlower(tentGroup, -3.2, 0.26, 1.8);
+    this.addBarrelFlower(tentGroup, 3.2, 0.26, 1.8);
   }
 
-  // C. POS PHOTOBOOTH KAYU TERBUKA (Bisa Dilalui / Dilewati Pemain)
+  // C. SPOT PHOTOBOOTH TAMAN TERBUKA (OUTDOOR PHOTO SPOT - Berada di Luar Jalan)
   buildWoodenPhotoBooth(x, z) {
     const pbGroup = new THREE.Group();
     pbGroup.position.set(x, 0, z);
     this.scene.add(pbGroup);
 
-    // Lantai Kayu Pos Photobooth
-    const baseGeo = new THREE.BoxGeometry(2.8, 0.25, 2.8);
+    // Dek Kayu Spot Foto di Rumput
+    const baseGeo = new THREE.BoxGeometry(3.0, 0.22, 3.0);
     const base = new THREE.Mesh(baseGeo, this.materials.woodWarm);
-    base.position.y = 0.125;
+    base.position.y = 0.11;
     pbGroup.add(base);
 
-    // 4 Tiang Gazebo Photobooth Terbuka (Depan & Belakang Terbuka Plong)
+    // Tiang Pergola Terbuka dengan Hiasan Lampu Taman
     const postCoords = [
-      [-1.2, -1.2], [1.2, -1.2],
-      [-1.2, 1.2], [1.2, 1.2]
+      [-1.3, -1.3], [1.3, -1.3],
+      [-1.3, 1.3], [1.3, 1.3]
     ];
     postCoords.forEach(c => {
       const pole = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.09, 0.1, 2.8, 8),
+        new THREE.CylinderGeometry(0.08, 0.1, 2.8, 8),
         this.materials.woodDark
       );
       pole.position.set(c[0], 1.4, c[1]);
       pbGroup.add(pole);
     });
 
-    // Atap Gazebo Pos Cantik
-    const roofGeo = new THREE.ConeGeometry(2.2, 0.9, 4);
-    roofGeo.rotateY(Math.PI / 4);
-    const roof = new THREE.Mesh(roofGeo, this.materials.woodWarm);
-    roof.position.y = 3.25;
-    pbGroup.add(roof);
+    // Balok Pergola Kayu Terbuka
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.12, 3.2), this.materials.woodWarm);
+    beam.position.y = 2.8;
+    pbGroup.add(beam);
 
-    // Backdrop Photo Stand di Sisi Kanan (Bukan menghalangi jalan tengah)
-    const frameStand = new THREE.Mesh(
-      new THREE.BoxGeometry(0.12, 2.0, 1.8),
+    // Backdrop Rustic Bingkai Kayu & Mawar Cantik di Sisi Luar
+    const backdropFrame = new THREE.Mesh(
+      new THREE.BoxGeometry(0.15, 2.2, 2.2),
       this.materials.woodFence
     );
-    frameStand.position.set(1.15, 1.25, 0);
-    pbGroup.add(frameStand);
+    backdropFrame.position.set(1.3, 1.4, 0);
+    pbGroup.add(backdropFrame);
 
-    // Kamera Antik Vintage di Atas Tripod di Sisi Kiri
+    // Kamera Antik Vintage di Atas Tripod di Sisi Samping
     const tripod = new THREE.Mesh(
       new THREE.ConeGeometry(0.3, 1.2, 3, 1, true),
       this.materials.woodDark
     );
-    tripod.position.set(-0.95, 0.6, 0);
+    tripod.position.set(-1.0, 0.6, 0);
     pbGroup.add(tripod);
 
     const cameraBox = new THREE.Mesh(
       new THREE.BoxGeometry(0.32, 0.25, 0.35),
       this.materials.goldAcsent
     );
-    cameraBox.position.set(-0.95, 1.3, 0);
+    cameraBox.position.set(-1.0, 1.3, 0);
     pbGroup.add(cameraBox);
 
     const cameraLens = new THREE.Mesh(
@@ -326,23 +328,23 @@ export class WeddingMap {
       this.materials.woodDark
     );
     cameraLens.rotateZ(Math.PI / 2);
-    cameraLens.position.set(-0.75, 1.3, 0);
+    cameraLens.position.set(-0.8, 1.3, 0);
     pbGroup.add(cameraLens);
 
-    // Lampu Lentera Gantung & Bunga
-    this.addLantern(pbGroup, -1.15, 2.5, 1.15);
-    this.addLantern(pbGroup, 1.15, 2.5, 1.15);
-    this.addBarrelFlower(pbGroup, 1.4, 0.25, 1.4);
+    // Lentera Gantung & Barel Bunga
+    this.addLantern(pbGroup, -1.2, 2.5, 1.2);
+    this.addLantern(pbGroup, 1.2, 2.5, 1.2);
+    this.addBarrelFlower(pbGroup, 1.4, 0.22, 1.4);
   }
 
-  // D. TAMAN CINCIN BUNGA PASANGAN (Kiri Atas at -8, -10) - Menampilkan Pasangan Bahagia
+  // D. TAMAN CINCIN BUNGA PASANGAN (OUTDOOR FLOWER RING - Berada di Luar Jalan)
   buildCoupleFlowerRing(x, z) {
     const ringGroup = new THREE.Group();
     ringGroup.position.set(x, 0, z);
     this.scene.add(ringGroup);
 
-    // Cincin Rumput & Bunga Ganda (Double Circular Flower Ring)
-    const ringRadius = 2.4;
+    // Cincin Rumput & Bunga Ganda di Rumput Taman
+    const ringRadius = 2.6;
     const ringGeo = new THREE.TorusGeometry(ringRadius, 0.35, 8, 32);
     ringGeo.rotateX(Math.PI / 2);
     const ringMesh = new THREE.Mesh(ringGeo, this.materials.foliageGreen);
@@ -394,59 +396,53 @@ export class WeddingMap {
     ringGroup.add(coupleHeart);
   }
 
-  // E. PANGGUNG GALERI FOTO (Kanan Atas at 8, -5)
+  // E. PANGGUNG GALERI FOTO TERBUKA (OUTDOOR GALLERY DECK - Berada di Luar Jalan)
   buildGalleryDeck(x, z) {
     const galGroup = new THREE.Group();
     galGroup.position.set(x, 0, z);
     this.scene.add(galGroup);
 
-    // Dek Panggung Kayu Bertingkat
-    const deckGeo = new THREE.BoxGeometry(3.6, 0.35, 3.2);
+    // Dek Panggung Kayu Terbuka
+    const deckGeo = new THREE.BoxGeometry(3.6, 0.3, 3.2);
     const deck = new THREE.Mesh(deckGeo, this.materials.woodWarm);
-    deck.position.y = 0.175;
+    deck.position.y = 0.15;
     galGroup.add(deck);
 
-    // Tangga Masuk Miring Landai
-    const stepGeo = new THREE.BoxGeometry(1.8, 0.18, 0.8);
-    const step = new THREE.Mesh(stepGeo, this.materials.woodWarm);
-    step.position.set(0, 0.09, 1.85);
-    galGroup.add(step);
-
-    // Pergola Kayu dengan Tiang di Sudut
-    const postGeo = new THREE.CylinderGeometry(0.12, 0.12, 2.6, 8);
+    // Tiang Pergola Kayu Terbuka
+    const postGeo = new THREE.CylinderGeometry(0.1, 0.1, 2.6, 8);
     const posts = [
       [-1.5, -1.3], [1.5, -1.3],
       [-1.5, 1.3], [1.5, 1.3]
     ];
     posts.forEach(p => {
       const col = new THREE.Mesh(postGeo, this.materials.woodWarm);
-      col.position.set(p[0], 1.4, p[1]);
+      col.position.set(p[0], 1.35, p[1]);
       galGroup.add(col);
     });
 
     // Balok Atap Pergola
-    const beamGeo = new THREE.BoxGeometry(3.6, 0.15, 3.2);
+    const beamGeo = new THREE.BoxGeometry(3.6, 0.12, 3.2);
     const beam = new THREE.Mesh(beamGeo, this.materials.woodWarm);
-    beam.position.y = 2.7;
+    beam.position.y = 2.65;
     galGroup.add(beam);
 
-    // Sulur Daun & Bunga Gantung di Atap Pergola
+    // Sulur Daun & Lampu Gantung Pesta Taman
     const foliageRoof = new THREE.Mesh(
-      new THREE.BoxGeometry(3.8, 0.2, 3.4),
+      new THREE.BoxGeometry(3.8, 0.15, 3.4),
       this.materials.foliageGreen
     );
-    foliageRoof.position.y = 2.85;
+    foliageRoof.position.y = 2.75;
     galGroup.add(foliageRoof);
 
-    // Bingkai Foto Terpajang di Belakang (Photo Frames Gallery)
+    // Bingkai Foto Prewedding Terpajang di Sisi Belakang
     const frameGeo = new THREE.BoxGeometry(1.2, 1.4, 0.08);
     const frame = new THREE.Mesh(frameGeo, this.materials.woodFence);
-    frame.position.set(0, 1.6, -1.1);
+    frame.position.set(0, 1.5, -1.2);
     galGroup.add(frame);
 
     // Pot Bunga di Sudut Panggung
-    this.addBarrelFlower(galGroup, -1.6, 0.35, 1.4);
-    this.addBarrelFlower(galGroup, 1.6, 0.35, 1.4);
+    this.addBarrelFlower(galGroup, -1.6, 0.3, 1.4);
+    this.addBarrelFlower(galGroup, 1.6, 0.3, 1.4);
   }
 
   // F. KOLAM RENANG / TERATAI & JEMBATAN LENGKUNG DI ATAS TREK JALAN
@@ -455,7 +451,7 @@ export class WeddingMap {
     pondGroup.position.set(x, 0, z);
     this.scene.add(pondGroup);
 
-    // Kolam Air Biru Jernih Oval di Sisi Jalur (x = 5.5, z = -11.5)
+    // Kolam Air Biru Jernih Oval di Sisi Jalur
     const pondGeo = new THREE.CylinderGeometry(3.2, 3.2, 0.12, 24);
     pondGeo.scale(1.25, 1, 0.95);
     const pond = new THREE.Mesh(pondGeo, this.materials.waterPond);
@@ -500,12 +496,9 @@ export class WeddingMap {
     }
 
     // JEMBATAN KAYU MELINTASI JALUR (Dari segmen jalan 7, -9 ke 4, -13)
-    // Offset relatif terhadap pondGroup (5, -12):
-    // Titik A: (7-5, -9 - (-12)) = (2, 3)
-    // Titik B: (4-5, -13 - (-12)) = (-1, -1)
     const bridgeGroup = new THREE.Group();
     bridgeGroup.position.set(0.5, 0, 1.0);
-    const bridgeAngle = Math.atan2(-3, -4); // Arah jembatan diagonal
+    const bridgeAngle = Math.atan2(-3, -4);
     bridgeGroup.rotation.y = bridgeAngle;
     pondGroup.add(bridgeGroup);
 
@@ -517,7 +510,6 @@ export class WeddingMap {
     for (let i = 0; i < plankCount; i++) {
       const t = i / (plankCount - 1);
       const bz = (t - 0.5) * bridgeLength;
-      // Parabola lengkungan jembatan
       const by = Math.sin(t * Math.PI) * 0.38 + 0.12;
 
       const plank = new THREE.Mesh(
@@ -525,7 +517,6 @@ export class WeddingMap {
         i % 2 === 0 ? this.materials.woodWarm : this.materials.woodDark
       );
       plank.position.set(0, by, bz);
-      // Sudut miring plank mengikuti turunan kurva
       const slope = Math.cos(t * Math.PI) * 0.25;
       plank.rotation.x = -slope;
       bridgeGroup.add(plank);
@@ -545,7 +536,6 @@ export class WeddingMap {
         bridgeGroup.add(post);
       }
 
-      // Balok pegangan atas jembatan
       const topRail = new THREE.Mesh(
         new THREE.BoxGeometry(0.08, 0.08, bridgeLength),
         this.materials.woodDark
@@ -555,7 +545,7 @@ export class WeddingMap {
     });
   }
 
-  // G. ALTAR BUKU TAMU & RSVP (Tengah at 0, -2) - Dijaga Pagar Ayu Cantik
+  // G. ALTAR BUKU TAMU & RSVP (OUTDOOR RECEPTION DESK - Berada di Luar Jalan Samping Checkpoint)
   buildRsvpAltar(x, z) {
     const rsvpGroup = new THREE.Group();
     rsvpGroup.position.set(x, 0, z);
@@ -564,13 +554,13 @@ export class WeddingMap {
     // Meja Resepsionis Kayu Pedesaan
     const deskGeo = new THREE.BoxGeometry(2.0, 0.75, 0.9);
     const desk = new THREE.Mesh(deskGeo, this.materials.woodWarm);
-    desk.position.set(0, 0.375, -0.4);
+    desk.position.set(0, 0.375, 0);
     rsvpGroup.add(desk);
 
     // Taplak Meja Krem Elegan
     const clothGeo = new THREE.BoxGeometry(2.05, 0.4, 0.95);
     const cloth = new THREE.Mesh(clothGeo, this.materials.tentFabric);
-    cloth.position.set(0, 0.58, -0.4);
+    cloth.position.set(0, 0.58, 0);
     rsvpGroup.add(cloth);
 
     // Kotak Surat Emas & Buku Tamu
@@ -578,29 +568,29 @@ export class WeddingMap {
       new THREE.BoxGeometry(0.4, 0.45, 0.35),
       this.materials.goldAcsent
     );
-    mailbox.position.set(-0.55, 0.95, -0.4);
+    mailbox.position.set(-0.55, 0.95, 0);
     rsvpGroup.add(mailbox);
 
     const book = new THREE.Mesh(
       new THREE.BoxGeometry(0.45, 0.06, 0.35),
       this.materials.plaqueBg
     );
-    book.position.set(0.45, 0.81, -0.4);
+    book.position.set(0.45, 0.81, 0);
     rsvpGroup.add(book);
 
     // Lentera Meja
-    this.addLantern(rsvpGroup, 0.8, 1.1, -0.4);
+    this.addLantern(rsvpGroup, 0.8, 1.1, 0);
 
-    // PAGAR AYU (Penerima Tamu Berbusana Anggun Cantik Tradisional yang Menjaga Meja RSVP)
+    // PAGAR AYU (Penerima Tamu Berbusana Anggun Cantik Tradisional Menjaga Meja di Sisi Luar)
     const pagarAyuL = new Character3D('pagar_ayu');
-    pagarAyuL.group.position.set(-0.7, 0, -1.1);
-    pagarAyuL.group.rotation.y = 0.15; // Menghadap tamu yang datang dari arah depan
+    pagarAyuL.group.position.set(-0.7, 0, -0.8);
+    pagarAyuL.group.rotation.y = 0.25; // Menghadap tamu yang lewat di jalan
     rsvpGroup.add(pagarAyuL.group);
     this.animatedDecorations.push(pagarAyuL);
 
     const pagarAyuR = new Character3D('pagar_ayu');
-    pagarAyuR.group.position.set(0.7, 0, -1.1);
-    pagarAyuR.group.rotation.y = -0.15;
+    pagarAyuR.group.position.set(0.7, 0, -0.8);
+    pagarAyuR.group.rotation.y = -0.25;
     rsvpGroup.add(pagarAyuR.group);
     this.animatedDecorations.push(pagarAyuR);
   }
