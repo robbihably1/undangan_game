@@ -1045,25 +1045,23 @@ export class WeddingMap {
     });
   }
 
-  // 5. Alam & Pepohonan Subur (Cherry Blossoms & Pohon Rindang Rimbun)
+  // 5. Alam & Pepohonan Subur (Cherry Blossoms & Pohon Rindang di Luar Jalur)
   buildFloraAndNature() {
+    // Seluruh pohon diletakkan di batas luar taman, tidak ada yang berada di tengah jalan
     const treePositions = [
-      { x: -4.8, z: 15 }, { x: 4.8, z: 15 },
-      { x: -5.0, z: 10 }, { x: 5.0, z: 10 },
-      { x: -5.2, z: 3 }, { x: 5.2, z: 3 },
-      { x: -4.5, z: -4 },
+      { x: -5.5, z: 15 }, { x: 5.5, z: 15 },
+      { x: -6.0, z: 11 }, { x: 6.0, z: 11 },
       { x: -14, z: 12 }, { x: 13, z: 12 },
       { x: -15, z: 2 }, { x: 14, z: 2 },
       { x: -14, z: -15 }, { x: 13, z: -15 },
-      { x: -2, z: -16 }, { x: 10, z: -16 },
-      { x: -10, z: -2 }
+      { x: -2, z: -16 }, { x: 10, z: -16 }
     ];
 
     treePositions.forEach(pos => {
       this.createShadedTree(pos.x, pos.z);
     });
 
-    // Semak Bunga Berwarna-Warni di Sepanjang Pagar
+    // Semak Bunga Berwarna-Warni di Sepanjang Pagar Lorong Masuk (Hanya z >= 9.5)
     this.createLushBushes();
 
     // Partikel Kelopak Bunga Berterbangan
@@ -1074,16 +1072,16 @@ export class WeddingMap {
     const bushGeo = new THREE.DodecahedronGeometry(0.45);
     const colors = [this.materials.flowerRose, this.materials.flowerPink, this.materials.flowerWhite, this.materials.flowerYellow];
 
-    // Semak di sisi kiri dan kanan jalan
-    for (let z = 16; z >= 2; z -= 1.8) {
-      // Sisi kiri (x ~ -2.6 s/d -3.6)
+    // Semak di sisi kiri dan kanan jalan hanya di lorong gerbang masuk (z = 16 s/d 9.5) agar tidak menghalangi jalan persimpangan
+    for (let z = 16; z >= 9.5; z -= 1.8) {
+      // Sisi kiri luar pagar
       const bL = new THREE.Mesh(bushGeo, colors[Math.abs(Math.floor(z)) % colors.length]);
-      bL.position.set(-2.8 - Math.random() * 0.4, 0.35, z);
+      bL.position.set(-2.8, 0.35, z);
       this.scene.add(bL);
 
-      // Sisi kanan (x ~ 2.6 s/d 3.6)
+      // Sisi kanan luar pagar
       const bR = new THREE.Mesh(bushGeo, colors[(Math.abs(Math.floor(z)) + 1) % colors.length]);
-      bR.position.set(2.8 + Math.random() * 0.4, 0.35, z);
+      bR.position.set(2.8, 0.35, z);
       this.scene.add(bR);
     }
   }

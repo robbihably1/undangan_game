@@ -10,11 +10,30 @@ export class CollisionSystem {
   constructor() {
     this.playerRadius = 0.38; // Radius collision pemain
     this.pathElements = [];
+    this.obstacles = [];
     this.debugGroup = new THREE.Group();
     this.debugGroup.visible = false;
     this.debugMesh = null;
 
     this.initPathNetwork();
+    this.initObstacles();
+  }
+
+  // Inisialisasi rintangan padat (Solid Obstacles) yang tidak dapat ditembus karakter
+  initObstacles() {
+    this.obstacles = [];
+
+    // 1. Meja Resepsionis Tamu & Kotak Angpao di Checkpoint (x: 0, z: 6)
+    // Meja kayu berada di z = 5.55 (dari z = 5.2 s/d 5.85, x = -0.95 s/d 0.95)
+    this.addObstacleBox(-0.95, 5.2, 0.95, 5.85);
+
+    // 2. Tugu Papan Petunjuk Arah 3D & Pin Peta di Checkpoint (x: 0, z: -2)
+    // Tiang utama dan pedestal bundar berdiri di (0, -2) dengan radius rintangan 0.6
+    this.addObstacleCircle(0, -2, 0.6);
+
+    // 3. Tiang Gerbang Masuk di (x: 0, z: 18)
+    this.addObstacleCircle(-2.0, 18, 0.35);
+    this.addObstacleCircle(2.0, 18, 0.35);
   }
 
   // Inisialisasi segmen jalan setapak sesuai layout referensi
@@ -25,7 +44,7 @@ export class CollisionSystem {
 
     // 2. Persimpangan Tamu Kehadiran (Buku Tamu & RSVP dijaga Pagar Ayu di x = 0, z = 6)
     this.addSegment(0, 14, 0, 6, 1.35);
-    this.addCircle(0, 6, 1.35); // Check point Tamu Kehadiran & RSVP
+    this.addCircle(0, 6, 1.55); // Check point Tamu Kehadiran & RSVP (diperluas agar bisa memutari meja)
 
     // 3. Area Resepsi & Akad (Check point di lingkaran x = -9, z = 7)
     this.addSegment(0, 6, -6, 6.5, 1.3);
@@ -38,7 +57,7 @@ export class CollisionSystem {
     this.addCircle(8, 7, 1.35); // Check point bersih kompak
 
     // 5. Check Point Pos Peta & Panduan Lokasi di x = 0, z = -2 (Tanpa jalan lurus langsung dari Pagar Ayu)
-    this.addCircle(0, -2, 1.4); // Check point Pos Peta & Penunjuk Arah 3D (dijangkau via sayap kiri atau kanan)
+    this.addCircle(0, -2, 1.55); // Check point Pos Peta & Penunjuk Arah 3D (diperluas agar bisa memutari tiang)
 
     // 6. Lingkaran Galeri Lukisan Pasangan (Kiri Atas / Barat Laut: x = -8, z = -10)
     // Jalur melingkar (Circular ring path)
@@ -69,6 +88,37 @@ export class CollisionSystem {
     this.addSegment(10, 1, 8, -5, 1.2);
   }
 
+  addObstacleBox(minX, minZ, maxX, maxZ) {
+    this.obstacles.push({ type: 'box', minX, minZ, maxX, maxZ });
+  }
+
+  addObstacleCircle(x, z, radius) {
+    this.obstacles.push({ type: 'circle', x, z, radius });
+  }
+
+  isBlockedByObstacle(x, z, playerRadius = this.playerRadius) {
+    const pad = playerRadius * 0.72;
+    for (let i = 0; i < this.obstacles.length; i++) {
+      const obs = this.obstacles[i];
+      if (obs.type === 'circle') {
+        const dist = Math.hypot(x - obs.x, z - obs.z);
+        if (dist < obs.radius + pad) {
+          return true; // Menabrak rintangan lingkaran/tiang
+        }
+      } else if (obs.type === 'box') {
+        if (
+          x >= obs.minX - pad &&
+          x <= obs.maxX + pad &&
+          z >= obs.minZ - pad &&
+          z <= obs.maxZ + pad
+        ) {
+          return true; // Menabrak rintangan kotak/meja
+        }
+      }
+    }
+    return false;
+  }
+
   addSegment(x1, z1, x2, z2, radius) {
     this.pathElements.push({
       type: 'segment',
@@ -96,6 +146,12 @@ export class CollisionSystem {
   }
 
   isWalkable(x, z, playerRadius = this.playerRadius) {
+    // 1. Cek rintangan benda padat (Karakter tidak bisa menembus meja tamu, tiang petunjuk arah, dll)
+    if (this.isBlockedByObstacle(x, z, playerRadius)) {
+      return false;
+    }
+
+    // 2. Cek apakah berada di dalam batas jalan setapak
     for (let i = 0; i < this.pathElements.length; i++) {
       const elem = this.pathElements[i];
       if (elem.type === 'circle') {
